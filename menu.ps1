@@ -1,7 +1,7 @@
 Clear-Host
 
 Write-Host "====================="
-Write-Host "   WINOPT TOOL"
+Write-Host "      WINOPT TOOL"
 Write-Host "====================="
 
 Write-Host "1. Clean Temp"
@@ -28,6 +28,10 @@ pause
 3 {
 sfc /scannow
 pause
+}
+
+0 {
+exit
 }
 
 }
