@@ -1,10 +1,16 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
 # Load modules
-. "$PSScriptRoot\modules\clean.ps1"
-. "$PSScriptRoot\modules\repair.ps1"
-. "$PSScriptRoot\modules\network.ps1"
-. "$PSScriptRoot\modules\tools.ps1"
+$modules = Get-ChildItem "$PSScriptRoot\modules\*.ps1"
+
+foreach ($module in $modules) {
+    . $module.FullName
+}
+
+function Pause {
+    Write-Host ""
+    Read-Host "Press Enter to continue"
+}
 
 function Show-Menu {
 
@@ -44,33 +50,33 @@ $choice = Read-Host "Select option"
 
 switch ($choice) {
 
-"1" { Clean-Temp; pause }
-"2" { Clean-Prefetch; pause }
-"3" { Clean-WindowsUpdate; pause }
+"1" { Clean-Temp; Pause }
+"2" { Clean-Prefetch; Pause }
+"3" { Clean-WindowsUpdate; Pause }
 
-"4" { Network-Reset; pause }
+"4" { Network-Reset; Pause }
 
-"5" { Repair-SFC; pause }
-"6" { Repair-DISM; pause }
+"5" { Repair-SFC; Pause }
+"6" { Repair-DISM; Pause }
 
-"7" { Restart-Explorer; pause }
-"8" { Clear-Recycle; pause }
+"7" { Restart-Explorer; Pause }
+"8" { Clear-Recycle; Pause }
 
-"9" { Flush-DNS; pause }
+"9" { Flush-DNS; Pause }
 
-"11" { Open-TaskManager }
-"12" { Open-ControlPanel }
-"13" { Open-DeviceManager }
+"11" { Open-TaskManager; Pause }
+"12" { Open-ControlPanel; Pause }
+"13" { Open-DeviceManager; Pause }
 
 "0" {
 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
 Start-Sleep 1
-exit
+break
 }
 
 default {
 Write-Host "Invalid option" -ForegroundColor Red
-pause
+Pause
 }
 
 }
