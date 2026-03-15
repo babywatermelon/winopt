@@ -26,19 +26,20 @@ Write-Host "[1] Clean Temp"
 Write-Host "[2] Clear Prefetch"
 Write-Host "[3] Clean Windows Update Cache"
 Write-Host "[4] Clear Recycle Bin"
-Write-Host "[6] Clean Windows Logs"
+Write-Host "[5] Clean Windows Logs"
 
 Write-Host ""
 Write-Host "Repair Tools"
 Write-Host "[7] Repair Windows (SFC)"
 Write-Host "[8] DISM Repair"
+Write-Host "[9] Full Windows Repair"
 
 Write-Host ""
 Write-Host "Network Tools"
-Write-Host "[9] Flush DNS"
-Write-Host "[10] Network Reset"
-Write-Host "[11] Renew IP"
-Write-Host "[12] Ping Test"
+Write-Host "[10] Flush DNS"
+Write-Host "[11] Network Reset"
+Write-Host "[12] Renew IP"
+Write-Host "[13] Ping Test"
 
 Write-Host ""
 Write-Host "Windows Tools"
@@ -72,15 +73,16 @@ switch ($choice) {
 "2" { Clean-Prefetch; Pause }
 "3" { Clean-WindowsUpdate; Pause }
 "4" { Clear-Recycle; Pause }
-"6" { Clean-WindowsLogs; Pause }
+"5" { Clean-WindowsLogs; Pause }
 
 "7" { Repair-SFC; Pause }
 "8" { Repair-DISM; Pause }
+"9" { Full Windows Repair }
 
-"9" { Flush-DNS; Pause }
-"10" { Network-Reset; Pause }
-"11" { Renew-IP; Pause }
-"12" { Ping-Test; Pause }
+"10" { Flush-DNS; Pause }
+"11" { Network-Reset; Pause }
+"12" { Renew-IP; Pause }
+"13" { Ping-Test; Pause }
 
 "20" { Open-TaskManager; Pause }
 "21" { Open-ControlPanel; Pause }
