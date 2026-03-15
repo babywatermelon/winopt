@@ -49,11 +49,12 @@ function Clear-RAM-Cache {
 
     Write-Host "Clearing RAM Standby Cache..." -ForegroundColor Cyan
 
-    $tool = Join-Path $PSScriptRoot "..\tools\EmptyStandbyList.exe"
+    $tool = "$PSScriptRoot\..\tools\EmptyStandbyList.exe"
+    $tool = Resolve-Path $tool -ErrorAction SilentlyContinue
 
     Write-Host "Tool path: $tool"
 
-    if (Test-Path $tool) {
+    if ($tool) {
         & $tool standbylist
         Write-Host "RAM cache cleared successfully!" -ForegroundColor Green
     }
