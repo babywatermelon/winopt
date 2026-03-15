@@ -26,7 +26,6 @@ Write-Host "[1] Clean Temp"
 Write-Host "[2] Clear Prefetch"
 Write-Host "[3] Clean Windows Update Cache"
 Write-Host "[4] Clear Recycle Bin"
-Write-Host "[5] Clear RAM Cache"
 Write-Host "[6] Clean Windows Logs"
 
 Write-Host ""
@@ -73,7 +72,6 @@ switch ($choice) {
 "2" { Clean-Prefetch; Pause }
 "3" { Clean-WindowsUpdate; Pause }
 "4" { Clear-Recycle; Pause }
-"5" { Clear-RAM-Cache; Pause }
 "6" { Clean-WindowsLogs; Pause }
 
 "7" { Repair-SFC; Pause }
