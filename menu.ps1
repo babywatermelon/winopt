@@ -77,7 +77,7 @@ switch ($choice) {
 
 "7" { Repair-SFC; Pause }
 "8" { Repair-DISM; Pause }
-"9" { Full-Windows; Pause }
+"9" { Repair-Full; Pause }
 
 "10" { Flush-DNS; Pause }
 "11" { Network-Reset; Pause }
