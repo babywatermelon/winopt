@@ -23,3 +23,18 @@ net start wuauserv
 Write-Host "Completed" -ForegroundColor Green
 
 }
+
+function Clear-RAM {
+
+    Write-Host "Clearing RAM Standby Cache..." -ForegroundColor Cyan
+
+    $tool = "$PSScriptRoot\tools\EmptyStandbyList.exe"
+
+    if (Test-Path $tool) {
+        & $tool standbylist
+        Write-Host "RAM cache cleared!" -ForegroundColor Green
+    }
+    else {
+        Write-Host "EmptyStandbyList not found!" -ForegroundColor Red
+    }
+}
