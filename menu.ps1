@@ -64,6 +64,7 @@ switch ($choice) {
 "8" { Clear-Recycle; Pause }
 
 "9" { Flush-DNS; Pause }
+"10" { Clear RAM Cache; Pause }
 
 "11" { Open-TaskManager; Pause }
 "12" { Open-ControlPanel; Pause }
