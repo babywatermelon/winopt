@@ -47,25 +47,19 @@ Write-Host "Windows Update cache cleaned" -ForegroundColor Green
 
 function Clear-RAM-Cache {
 
-Write-Host "Clearing RAM Standby Cache..." -ForegroundColor Cyan
+    Write-Host "Clearing RAM Standby Cache..." -ForegroundColor Cyan
 
-$tool = "$PSScriptRoot\..\tools\EmptyStandbyList.exe"
+    $tool = Join-Path $PSScriptRoot "..\tools\EmptyStandbyList.exe"
 
-if (Test-Path $tool) {
+    Write-Host "Tool path: $tool"
 
-    & $tool standbylist
-    & $tool modifiedpagelist
-    & $tool workingsets
-
-    Write-Host "RAM cache cleared!" -ForegroundColor Green
-
-}
-else {
-
-    Write-Host "EmptyStandbyList.exe not found in tools folder!" -ForegroundColor Red
-
-}
-
+    if (Test-Path $tool) {
+        & $tool standbylist
+        Write-Host "RAM cache cleared successfully!" -ForegroundColor Green
+    }
+    else {
+        Write-Host "EmptyStandbyList.exe not found in tools folder!" -ForegroundColor Red
+    }
 }
 
 # -------------------------------
