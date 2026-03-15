@@ -49,7 +49,7 @@ function Clear-RAM-Cache {
 
     Write-Host "Clearing RAM Standby Cache..." -ForegroundColor Cyan
 
-    $base = Split-Path $PSScriptRoot -Parent
+    $base = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
     $tool = Join-Path $base "tools\EmptyStandbyList.exe"
 
     Write-Host "Tool path: $tool"
