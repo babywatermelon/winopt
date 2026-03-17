@@ -1,17 +1,13 @@
 function Install-Chrome {
 
-    Write-Host "Checking Chrome..." -ForegroundColor Cyan
+    Write-Host "Installing Google Chrome..." -ForegroundColor Cyan
 
-    $app = winget list --id Google.Chrome
+    try {
+        Start-Process "winget" -ArgumentList "install --id Google.Chrome --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
 
-    if ($app -match "Google Chrome") {
-        Write-Host "Chrome already installed!" -ForegroundColor Yellow
-        return
+        Write-Host "Done!" -ForegroundColor Green
     }
-
-    Write-Host "Installing Chrome..." -ForegroundColor Cyan
-
-    winget install --id Google.Chrome --exact --accept-package-agreements --accept-source-agreements
-
-    Write-Host "Done!" -ForegroundColor Green
+    catch {
+        Write-Host "Install failed!" -ForegroundColor Red
+    }
 }
