@@ -28,13 +28,13 @@ function Show-CenteredBlock($lines) {
 function Header {
     Clear-Host
 
-    $header = @(
-        "████████████████████████████████████████████",
-        "          WINOPT - OPTIMIZATION TOOL         ",
-        "        Windows Optimization Utility         ",
-        "████████████████████████████████████████████",
-        ""
-    )
+$header = @(
+    "████████████████████████████████████████████",
+    "          WINOPT - OPTIMIZATION TOOL         ",
+    "        Windows Optimization Utility         ",
+    "████████████████████████████████████████████",
+    ""
+)
 
     foreach ($line in $header) {
         Write-Host $line -ForegroundColor Green
