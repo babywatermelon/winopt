@@ -1,62 +1,32 @@
-# ===== UI =====
-
-function Line {
-    Write-Host "----------------------------------------" -ForegroundColor DarkGray
-}
+# ===== UI NHẸ =====
 
 function Title($text) {
-    Line
-    Write-Host " $text" -ForegroundColor Cyan
-    Line
-}
-
-function Status($text) {
-    Write-Host "[*] $text" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "========== $text ==========" -ForegroundColor Cyan
 }
 
 function Done($text) {
-    Write-Host "[✓] $text" -ForegroundColor Green
+    Write-Host "[OK] $text" -ForegroundColor Green
 }
 
 function Fail($text) {
-    Write-Host "[✗] $text" -ForegroundColor Red
+    Write-Host "[ERROR] $text" -ForegroundColor Red
 }
 
-function Wait-Animation {
-    $chars = "|/-\\"
-    for ($i = 0; $i -lt 15; $i++) {
-        foreach ($c in $chars.ToCharArray()) {
-            Write-Host -NoNewline "`rProcessing... $c"
-            Start-Sleep -Milliseconds 120
-        }
-    }
-    Write-Host ""
-}
-
-# ===== CORE =====
+# ===== CORE (CHẠY TRỰC TIẾP WINGET) =====
 
 function Install-App($name, $id) {
 
-    Title "INSTALL $name"
-
-    Status "Checking package..."
-    Start-Sleep 1
-
-    Status "Starting installation..."
-    Wait-Animation
+    Title "Installing $name"
 
     try {
-        Start-Process "winget" `
-            -ArgumentList "install --id $id --exact --accept-package-agreements --accept-source-agreements" `
-            -Wait
+        winget install --id $id --exact --accept-package-agreements --accept-source-agreements
 
-        Done "$name installed successfully"
+        Done "$name installed"
     }
     catch {
-        Fail "$name installation failed"
+        Fail "$name install failed"
     }
-
-    Write-Host ""
 }
 
 # ===== APPS =====
@@ -75,39 +45,15 @@ function Install-Firefox {
 
 function Install-Office {
 
-    Title "INSTALL MICROSOFT OFFICE 365"
-
-    Status "This may take several minutes..."
-    Status "Running in background..."
-
-    $job = Start-Job {
-        $chars = "|/-\\"
-        while ($true) {
-            foreach ($c in $chars.ToCharArray()) {
-                Write-Host -NoNewline "`rInstalling Office... $c"
-                Start-Sleep -Milliseconds 200
-            }
-        }
-    }
+    Title "Installing Microsoft Office 365"
+    Write-Host "Please wait... this may take several minutes" -ForegroundColor Yellow
 
     try {
-        Start-Process "winget" `
-            -ArgumentList "install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements" `
-            -Wait
+        winget install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements
 
-        Stop-Job $job | Out-Null
-        Remove-Job $job
-
-        Write-Host "`r" -NoNewline
-        Done "Microsoft Office installed successfully"
+        Done "Office installed"
     }
     catch {
-        Stop-Job $job | Out-Null
-        Remove-Job $job
-
-        Write-Host "`r" -NoNewline
-        Fail "Office installation failed"
+        Fail "Office install failed"
     }
-
-    Write-Host ""
 }
