@@ -12,101 +12,119 @@ function Pause {
     Read-Host "Press Enter to continue"
 }
 
+function Header {
+    Clear-Host
+    Write-Host "=====================================" -ForegroundColor DarkGray
+    Write-Host "              WINOPT TOOL            " -ForegroundColor Cyan
+    Write-Host "=====================================" -ForegroundColor DarkGray
+    Write-Host ""
+}
+
 function Show-Menu {
 
-Clear-Host
+    Header
 
-Write-Host "=====================================" -ForegroundColor DarkGray
-Write-Host "              WINOPT TOOL            " -ForegroundColor Cyan
-Write-Host "=====================================" -ForegroundColor DarkGray
-Write-Host ""
+    Write-Host "System Cleanup" -ForegroundColor Yellow
+    Write-Host "[1] Clean Temp"
+    Write-Host "[2] Clear Prefetch"
+    Write-Host "[3] Clean Windows Update Cache"
+    Write-Host "[4] Clear Recycle Bin"
+    Write-Host "[5] Clean Windows Logs"
 
-Write-Host "System Cleanup"
-Write-Host "[1] Clean Temp"
-Write-Host "[2] Clear Prefetch"
-Write-Host "[3] Clean Windows Update Cache"
-Write-Host "[4] Clear Recycle Bin"
-Write-Host "[5] Clean Windows Logs"
+    Write-Host ""
+    Write-Host "Repair Tools" -ForegroundColor Yellow
+    Write-Host "[7] Repair Windows (SFC)"
+    Write-Host "[8] DISM Repair"
+    Write-Host "[9] Full Windows Repair"
 
-Write-Host ""
-Write-Host "Repair Tools"
-Write-Host "[7] Repair Windows (SFC)"
-Write-Host "[8] DISM Repair"
-Write-Host "[9] Full Windows Repair"
+    Write-Host ""
+    Write-Host "Network Tools" -ForegroundColor Yellow
+    Write-Host "[10] Flush DNS"
+    Write-Host "[11] Network Reset"
+    Write-Host "[12] Renew IP"
+    Write-Host "[13] Ping Test"
 
-Write-Host ""
-Write-Host "Network Tools"
-Write-Host "[10] Flush DNS"
-Write-Host "[11] Network Reset"
-Write-Host "[12] Renew IP"
-Write-Host "[13] Ping Test"
+    Write-Host ""
+    Write-Host "Windows Tools" -ForegroundColor Yellow
+    Write-Host "[20] Open Task Manager"
+    Write-Host "[21] Open Control Panel"
+    Write-Host "[22] Open Device Manager"
+    Write-Host "[23] Open Services"
+    Write-Host "[24] Open Disk Management"
+    Write-Host "[25] Open System Properties"
+    Write-Host "[26] Open Startup Apps"
+    Write-Host "[27] Open SystemInfo"
+    Write-Host "[28] Show System Info GUI"
 
-Write-Host ""
-Write-Host "Windows Tools"
-Write-Host "[20] Open Task Manager"
-Write-Host "[21] Open Control Panel"
-Write-Host "[22] Open Device Manager"
-Write-Host "[23] Open Services"
-Write-Host "[24] Open Disk Management"
-Write-Host "[25] Open System Properties"
-Write-Host "[26] Open Startup Apps"
-Write-Host "[27] Open SystemInfo"
-Write-Host "[28] Show System Info GUI"
+    Write-Host ""
+    Write-Host "Install Tools" -ForegroundColor Yellow
+    Write-Host "[40] Install Coc Coc Browser"
 
-Write-Host ""
-Write-Host "Install Tools"
-Write-Host "[40] Install Coc Coc Browser"
-
-Write-Host ""
-Write-Host "[0] Exit"
-Write-Host ""
-
+    Write-Host ""
+    Write-Host "[0] Exit"
+    Write-Host ""
 }
+
+# ===== MAIN LOOP =====
 
 while ($true) {
 
-Show-Menu
+    Show-Menu
+    $choice = Read-Host "Select option"
 
-$choice = Read-Host "Select option"
+    try {
 
-switch ($choice) {
+        switch ($choice) {
 
-"1" { Clean-Temp; Pause }
-"2" { Clean-Prefetch; Pause }
-"3" { Clean-WindowsUpdate; Pause }
-"4" { Clear-Recycle; Pause }
-"5" { Clean-WindowsLogs; Pause }
+            # Cleanup
+            "1" { Clean-Temp }
+            "2" { Clean-Prefetch }
+            "3" { Clean-WindowsUpdate }
+            "4" { Clear-Recycle }
+            "5" { Clean-WindowsLogs }
 
-"7" { Repair-SFC; Pause }
-"8" { Repair-DISM; Pause }
-"9" { Repair-Full; Pause }
+            # Repair
+            "7" { Repair-SFC }
+            "8" { Repair-DISM }
+            "9" { Repair-Full }
 
-"10" { Flush-DNS; Pause }
-"11" { Network-Reset; Pause }
-"12" { Renew-IP; Pause }
-"13" { Ping-Test; Pause }
+            # Network
+            "10" { Flush-DNS }
+            "11" { Network-Reset }
+            "12" { Renew-IP }
+            "13" { Ping-Test }
 
-"20" { Open-TaskManager; Pause }
-"21" { Open-ControlPanel; Pause }
-"22" { Open-DeviceManager; Pause }
-"23" { Open-Services; Pause }
-"24" { Open-DiskManagement; Pause }
-"25" { Open-SystemProperties; Pause }
-"26" { Open-StartupApps; Pause }
-"27" { Open-SystemInfo; Pause }
-"28" { Show-SystemInfoGUI; Pause }
+            # Windows Tools (GIỮ NGUYÊN)
+            "20" { Open-TaskManager }
+            "21" { Open-ControlPanel }
+            "22" { Open-DeviceManager }
+            "23" { Open-Services }
+            "24" { Open-DiskManagement }
+            "25" { Open-SystemProperties }
+            "26" { Open-StartupApps }
+            "27" { Open-SystemInfo }
+            "28" { Show-SystemInfoGUI }
 
-"0" {
-Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
-Start-Sleep 1
-break
-}
+            # Install
+            "40" { Install-CocCoc }
 
-default {
-Write-Host "Invalid option" -ForegroundColor Red
-Pause
-}
+            # Exit
+            "0" {
+                Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
+                Start-Sleep 1
+                break
+            }
 
-}
+            default {
+                Write-Host "Invalid option!" -ForegroundColor Red
+            }
+        }
 
+    }
+    catch {
+        Write-Host ""
+        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+
+    Pause
 }
