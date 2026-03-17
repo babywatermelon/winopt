@@ -50,7 +50,7 @@ Write-Host "[23] Open Services"
 Write-Host "[24] Open Disk Management"
 Write-Host "[25] Open System Properties"
 Write-Host "[26] Open Startup Apps"
-Write-Host "[27] Show System Info"
+Write-Host "[27] Open-SystemInfo"
 Write-Host "[28] Show System Info GUI"
 
 Write-Host ""
@@ -89,7 +89,7 @@ switch ($choice) {
 "24" { Open-DiskManagement; Pause }
 "25" { Open-SystemProperties; Pause }
 "26" { Open-StartupApps; Pause }
-"27" { Show-SystemInfo; Pause }
+"27" { Open-SystemInfo; Pause }
 "28" { Show-SystemInfoGUI; Pause }
 
 "0" {
