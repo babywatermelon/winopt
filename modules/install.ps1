@@ -39,3 +39,18 @@ function Install-Firefox {
         Write-Host "Install failed!" -ForegroundColor Red
     }
 }
+
+
+function Install-Office {
+
+    Write-Host "Installing Microsoft Office 365..." -ForegroundColor Cyan
+
+    try {
+        Start-Process "winget" -ArgumentList "install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+        Write-Host "Office installed!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Install failed!" -ForegroundColor Red
+    }
+}
