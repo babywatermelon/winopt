@@ -29,54 +29,54 @@ function Header {
     Clear-Host
 
     $header = @(
-        "============================================",
-        "                WINOPT TOOL                 ",
-        "        Windows Optimization Utility        ",
-        "============================================",
+        "████████████████████████████████████████████",
+        "          WINOPT - OPTIMIZATION TOOL         ",
+        "        Windows Optimization Utility         ",
+        "████████████████████████████████████████████",
         ""
     )
 
-    Show-CenteredBlock $header
+    foreach ($line in $header) {
+        Write-Host $line -ForegroundColor Green
+    }
 }
 
 function Show-Menu {
-
     Header
 
-    $menu = @(
-        "[ SYSTEM CLEANUP ]",
-        " 1. Clean Temp             2. Clear Prefetch",
-        " 3. Windows Update Cache   4. Recycle Bin",
-        " 5. Windows Logs",
-        "",
-        "[ REPAIR TOOLS ]",
-        " 7. SFC Scan               8. DISM Repair",
-        " 9. Full Windows Repair",
-        "",
-        "[ NETWORK TOOLS ]",
-        "10. Flush DNS             11. Network Reset",
-        "12. Renew IP              13. Ping Test",
-        "",
-        "[ WINDOWS TOOLS ]",
-        "20. Task Manager          21. Control Panel",
-        "22. Device Manager        23. Services",
-        "24. Disk Management       25. System Properties",
-        "26. Startup Apps          27. System Info",
-        "28. System Info GUI",
-        "",
-        "[ INSTALL TOOLS ]",
-        "40. Google Chrome         41. Microsoft Edge",
-        "42. Mozilla Firefox       50. Office 365",
-        "",
-        "0. Exit"
-    )
-
-    Show-CenteredBlock $menu
-
+    Write-Host "[ SYSTEM CLEANUP ]" -ForegroundColor Cyan
+    Write-Host " 1. Clean Temp             2. Clear Prefetch" -ForegroundColor Yellow
+    Write-Host " 3. Windows Update Cache   4. Recycle Bin" -ForegroundColor Yellow
+    Write-Host " 5. Windows Logs" -ForegroundColor Yellow
     Write-Host ""
-    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
-}
 
+    Write-Host "[ REPAIR TOOLS ]" -ForegroundColor Cyan
+    Write-Host " 7. SFC Scan               8. DISM Repair" -ForegroundColor Yellow
+    Write-Host " 9. Full Windows Repair" -ForegroundColor Yellow
+    Write-Host ""
+
+    Write-Host "[ NETWORK TOOLS ]" -ForegroundColor Cyan
+    Write-Host "10. Flush DNS             11. Network Reset" -ForegroundColor Yellow
+    Write-Host "12. Renew IP              13. Ping Test" -ForegroundColor Yellow
+    Write-Host ""
+
+    Write-Host "[ WINDOWS TOOLS ]" -ForegroundColor Cyan
+    Write-Host "20. Task Manager          21. Control Panel" -ForegroundColor Yellow
+    Write-Host "22. Device Manager        23. Services" -ForegroundColor Yellow
+    Write-Host "24. Disk Management       25. System Properties" -ForegroundColor Yellow
+    Write-Host "26. Startup Apps          27. System Info" -ForegroundColor Yellow
+    Write-Host "28. System Info GUI" -ForegroundColor Yellow
+    Write-Host ""
+
+    Write-Host "[ INSTALL TOOLS ]" -ForegroundColor Cyan
+    Write-Host "40. Google Chrome         41. Microsoft Edge" -ForegroundColor Yellow
+    Write-Host "42. Mozilla Firefox       50. Office 365" -ForegroundColor Yellow
+    Write-Host ""
+
+    Write-Host "0. Exit" -ForegroundColor Red
+    Write-Host ""
+    Write-Host "Select option: " -NoNewline -ForegroundColor Magenta
+}
 # ===== MAIN LOOP =====
 
 while ($true) {
