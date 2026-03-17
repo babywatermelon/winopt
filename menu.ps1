@@ -88,8 +88,7 @@ switch ($choice) {
 "24" { Open-DiskManagement; Pause }
 "25" { Open-SystemProperties; Pause }
 "26" { Open-StartupApps; Pause }
-
-"30" { Show-SystemInfo; Pause }
+"27" { Show-SystemInfo; Pause }
 
 "0" {
 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
