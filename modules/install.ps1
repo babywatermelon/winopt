@@ -11,3 +11,31 @@ function Install-Chrome {
         Write-Host "Install failed!" -ForegroundColor Red
     }
 }
+
+function Install-Edge {
+
+    Write-Host "Installing Microsoft Edge..." -ForegroundColor Cyan
+
+    try {
+        Start-Process "winget" -ArgumentList "install --id Microsoft.Edge --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+        Write-Host "Edge installed!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Install failed!" -ForegroundColor Red
+    }
+}
+
+function Install-Firefox {
+
+    Write-Host "Installing Mozilla Firefox..." -ForegroundColor Cyan
+
+    try {
+        Start-Process "winget" -ArgumentList "install --id Mozilla.Firefox --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+
+        Write-Host "Firefox installed!" -ForegroundColor Green
+    }
+    catch {
+        Write-Host "Install failed!" -ForegroundColor Red
+    }
+}
