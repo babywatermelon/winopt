@@ -1,24 +1,9 @@
-function Install-CocCoc {
+function Install-Chrome {
 
-    Write-Host ""
-    Write-Host "Downloading Coc Coc..." -ForegroundColor Yellow
-
-    $url = "https://files.coccoc.com/browser/installers/coccoc_vi.exe"
-    $output = "$env:TEMP\coccoc.exe"
+    Write-Host "Installing Chrome..." -ForegroundColor Yellow
 
     try {
-        Invoke-WebRequest -Uri $url -OutFile $output -ErrorAction Stop
-        Write-Host "Download completed!" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "Download failed!" -ForegroundColor Red
-        return
-    }
-
-    Write-Host "Installing Coc Coc..." -ForegroundColor Yellow
-
-    try {
-        Start-Process $output -ArgumentList "/S" -Wait -ErrorAction Stop
+        winget install -e --id Google.Chrome --silent --accept-package-agreements --accept-source-agreements
         Write-Host "Installed successfully!" -ForegroundColor Green
     }
     catch {
