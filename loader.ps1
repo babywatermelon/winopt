@@ -16,11 +16,22 @@ if (!(Test-Path $modules)) {
 # Download menu
 Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/menu.ps1" -OutFile "$base\menu.ps1"
 
-# Download modules
-Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/clean.ps1" -OutFile "$modules\clean.ps1"
-Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/network.ps1" -OutFile "$modules\network.ps1"
-Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/repair.ps1" -OutFile "$modules\repair.ps1"
-Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/tools.ps1" -OutFile "$modules\tools.ps1"
+# ===== Download modules (FULL) =====
+$moduleList = @(
+    "clean",
+    "network",
+    "repair",
+    "tools",
+    "installer"   # 
+)
+
+foreach ($m in $moduleList) {
+    $url = "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/$m.ps1"
+    $out = "$modules\$m.ps1"
+
+    Write-Host "Downloading $m..." -ForegroundColor DarkGray
+    Invoke-WebRequest $url -OutFile $out
+}
 
 # Run menu
 powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
