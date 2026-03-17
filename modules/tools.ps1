@@ -154,3 +154,8 @@ function Show-SystemInfo {
 
     Write-Host "`n========================================" -ForegroundColor Cyan
 }
+
+function Open-SystemInfoGUI2 {
+    Write-Host "Opening System Information..." -ForegroundColor Yellow
+    Start-Process msinfo32
+}
