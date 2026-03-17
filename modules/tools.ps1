@@ -88,54 +88,70 @@ function Show-SystemInfo {
     Clear-Host
     Write-Host "========== SYSTEM INFORMATION ==========" -ForegroundColor Cyan
 
-    # OS Info
+    # ===== OS =====
     $os = Get-CimInstance Win32_OperatingSystem
-    Write-Host ""
-    Write-Host "[OS]" -ForegroundColor Yellow
+    Write-Host "`n[OS]" -ForegroundColor Yellow
     Write-Host "Name: $($os.Caption)"
     Write-Host "Version: $($os.Version)"
+    Write-Host "Build: $($os.BuildNumber)"
     Write-Host "Architecture: $($os.OSArchitecture)"
+    Write-Host "Install Date: $($os.InstallDate)"
     Write-Host "Last Boot: $($os.LastBootUpTime)"
 
-    # CPU Info
+    # ===== SYSTEM =====
+    $sys = Get-CimInstance Win32_ComputerSystem
+    Write-Host "`n[SYSTEM]" -ForegroundColor Yellow
+    Write-Host "Manufacturer: $($sys.Manufacturer)"
+    Write-Host "Model: $($sys.Model)"
+    Write-Host "System Type: $($sys.SystemType)"
+    Write-Host "User: $($sys.UserName)"
+
+    # ===== CPU =====
     $cpu = Get-CimInstance Win32_Processor
-    Write-Host ""
-    Write-Host "[CPU]" -ForegroundColor Yellow
+    Write-Host "`n[CPU]" -ForegroundColor Yellow
     Write-Host "Name: $($cpu.Name)"
     Write-Host "Cores: $($cpu.NumberOfCores)"
     Write-Host "Threads: $($cpu.NumberOfLogicalProcessors)"
+    Write-Host "Max Clock: $($cpu.MaxClockSpeed) MHz"
 
-    # RAM Info
-    $ram = Get-CimInstance Win32_ComputerSystem
-    $totalRAM = [math]::Round($ram.TotalPhysicalMemory / 1GB, 2)
-    Write-Host ""
-    Write-Host "[RAM]" -ForegroundColor Yellow
-    Write-Host "Total RAM: $totalRAM GB"
+    # ===== RAM =====
+    $ram = [math]::Round($sys.TotalPhysicalMemory / 1GB, 2)
+    Write-Host "`n[RAM]" -ForegroundColor Yellow
+    Write-Host "Total RAM: $ram GB"
 
-    # Disk Info
-    Write-Host ""
-    Write-Host "[DISK]" -ForegroundColor Yellow
+    # ===== BIOS =====
+    $bios = Get-CimInstance Win32_BIOS
+    Write-Host "`n[BIOS]" -ForegroundColor Yellow
+    Write-Host "Vendor: $($bios.Manufacturer)"
+    Write-Host "Version: $($bios.SMBIOSBIOSVersion)"
+    Write-Host "Release Date: $($bios.ReleaseDate)"
+
+    # ===== MAINBOARD =====
+    $board = Get-CimInstance Win32_BaseBoard
+    Write-Host "`n[MAINBOARD]" -ForegroundColor Yellow
+    Write-Host "Manufacturer: $($board.Manufacturer)"
+    Write-Host "Product: $($board.Product)"
+
+    # ===== GPU =====
+    $gpu = Get-CimInstance Win32_VideoController
+    Write-Host "`n[GPU]" -ForegroundColor Yellow
+    foreach ($g in $gpu) {
+        Write-Host "Name: $($g.Name)"
+    }
+
+    # ===== DISK =====
+    Write-Host "`n[DISK]" -ForegroundColor Yellow
     Get-CimInstance Win32_LogicalDisk -Filter "DriveType=3" | ForEach-Object {
         $size = [math]::Round($_.Size / 1GB, 2)
         $free = [math]::Round($_.FreeSpace / 1GB, 2)
         Write-Host "$($_.DeviceID) - Total: $size GB | Free: $free GB"
     }
 
-    # GPU Info
-    $gpu = Get-CimInstance Win32_VideoController
-    Write-Host ""
-    Write-Host "[GPU]" -ForegroundColor Yellow
-    foreach ($g in $gpu) {
-        Write-Host "Name: $($g.Name)"
-    }
-
-    # Network Info
-    Write-Host ""
-    Write-Host "[NETWORK]" -ForegroundColor Yellow
+    # ===== NETWORK =====
+    Write-Host "`n[NETWORK]" -ForegroundColor Yellow
     Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -notlike "127.*"} | ForEach-Object {
-        Write-Host "IP Address: $($_.IPAddress)"
+        Write-Host "IP: $($_.IPAddress)"
     }
 
-    Write-Host ""
-    Write-Host "========================================" -ForegroundColor Cyan
+    Write-Host "`n========================================" -ForegroundColor Cyan
 }
