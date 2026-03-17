@@ -37,50 +37,58 @@ function Show-Menu {
 
     Header
 
-    Write-Host "System Cleanup" -ForegroundColor Yellow
-    Write-Host "[1] Clean Temp"
-    Write-Host "[2] Clear Prefetch"
-    Write-Host "[3] Clean Windows Update Cache"
-    Write-Host "[4] Clear Recycle Bin"
-    Write-Host "[5] Clean Windows Logs"
+    $width = $Host.UI.RawUI.WindowSize.Width
+    $menuWidth = 80   # chỉnh độ rộng khung
+    $leftPadding = [math]::Floor(($width - $menuWidth) / 2)
 
-    Write-Host ""
-    Write-Host "Repair Tools" -ForegroundColor Yellow
-    Write-Host "[7] Repair Windows (SFC)"
-    Write-Host "[8] DISM Repair"
-    Write-Host "[9] Full Windows Repair"
+    function Draw-Line($left = "", $right = "") {
+        $innerWidth = $menuWidth - 4
+        $half = [math]::Floor($innerWidth / 2)
 
-    Write-Host ""
-    Write-Host "Network Tools" -ForegroundColor Yellow
-    Write-Host "[10] Flush DNS"
-    Write-Host "[11] Network Reset"
-    Write-Host "[12] Renew IP"
-    Write-Host "[13] Ping Test"
+        $leftText  = $left.PadRight($half)
+        $rightText = $right.PadRight($half)
 
-    Write-Host ""
-    Write-Host "Windows Tools" -ForegroundColor Yellow
-    Write-Host "[20] Open Task Manager"
-    Write-Host "[21] Open Control Panel"
-    Write-Host "[22] Open Device Manager"
-    Write-Host "[23] Open Services"
-    Write-Host "[24] Open Disk Management"
-    Write-Host "[25] Open System Properties"
-    Write-Host "[26] Open Startup Apps"
-    Write-Host "[27] Open SystemInfo"
-    Write-Host "[28] Show System Info GUI"
+        Write-Host (" " * $leftPadding + "| " + $leftText + $rightText + " |")
+    }
 
-    Write-Host ""
-    Write-Host "Install Tools" -ForegroundColor Yellow
-    Write-Host "[40] Install Google Chrome"
-    Write-Host "[41] Install Microsoft Edge"
-    Write-Host "[42] Install Mozilla Firefox"
-    Write-Host "[50] Install Office 365"
+    # Top border
+    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+")
 
-    Write-Host ""
-    Write-Host "[0] Exit"
+    # ===== CONTENT =====
+    Draw-Line "System Cleanup"         "Repair Tools"
+    Draw-Line "[1] Clean Temp"         "[7] Repair Windows (SFC)"
+    Draw-Line "[2] Clear Prefetch"     "[8] DISM Repair"
+    Draw-Line "[3] Clean Update Cache" "[9] Full Windows Repair"
+    Draw-Line "[4] Clear Recycle Bin"  ""
+    Draw-Line "[5] Clean Logs"         ""
+    Draw-Line "" ""
+
+    Draw-Line "Network Tools"          "Windows Tools"
+    Draw-Line "[10] Flush DNS"         "[20] Task Manager"
+    Draw-Line "[11] Network Reset"     "[21] Control Panel"
+    Draw-Line "[12] Renew IP"          "[22] Device Manager"
+    Draw-Line "[13] Ping Test"         "[23] Services"
+    Draw-Line ""                       "[24] Disk Management"
+    Draw-Line ""                       "[25] System Properties"
+    Draw-Line ""                       "[26] Startup Apps"
+    Draw-Line ""                       "[27] SystemInfo"
+    Draw-Line ""                       "[28] System Info GUI"
+    Draw-Line "" ""
+
+    Draw-Line "Install Tools"          ""
+    Draw-Line "[40] Chrome"            ""
+    Draw-Line "[41] Edge"              ""
+    Draw-Line "[42] Firefox"           ""
+    Draw-Line "[50] Office 365"        ""
+    Draw-Line "" ""
+
+    Draw-Line "[0] Exit"               ""
+
+    # Bottom border
+    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+")
+
     Write-Host ""
 }
-
 # ===== MAIN LOOP =====
 
 while ($true) {
