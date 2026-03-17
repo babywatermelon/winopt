@@ -1,11 +1,14 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
-# Load modules
-$modules = Get-ChildItem "$PSScriptRoot\modules\*.ps1"
+# ===== LOAD MODULES (FIX TEMP PATH) =====
+$base = "$env:TEMP\winopt"
+$modules = Get-ChildItem "$base\modules\*.ps1"
 
 foreach ($module in $modules) {
     . $module.FullName
 }
+
+# ===== UI =====
 
 function Pause {
     Write-Host ""
@@ -55,12 +58,12 @@ function Show-Menu {
     Write-Host "[26] Open Startup Apps"
     Write-Host "[27] Open SystemInfo"
     Write-Host "[28] Show System Info GUI"
-    
+
     Write-Host ""
     Write-Host "Install Tools" -ForegroundColor Yellow
     Write-Host "[40] Install Google Chrome"
-    Write-Host "[41] Install Edge"
-    Write-Host "[42] Install Firefox"
+    Write-Host "[41] Install Microsoft Edge"
+    Write-Host "[42] Install Mozilla Firefox"
     Write-Host "[50] Install Office 365"
 
     Write-Host ""
@@ -73,7 +76,9 @@ function Show-Menu {
 while ($true) {
 
     Show-Menu
-    $choice = Read-Host "Select option"
+
+    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
+    $choice = Read-Host
 
     try {
 
@@ -97,7 +102,7 @@ while ($true) {
             "12" { Renew-IP }
             "13" { Ping-Test }
 
-            # Windows Tools 
+            # Windows Tools
             "20" { Open-TaskManager }
             "21" { Open-ControlPanel }
             "22" { Open-DeviceManager }
