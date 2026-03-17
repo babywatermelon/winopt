@@ -1,56 +1,107 @@
-function Install-Chrome {
+# ===== UI HELPERS =====
 
-    Write-Host "Installing Google Chrome..." -ForegroundColor Cyan
+function Show-Title($msg) {
+    Write-Host "`n==== $msg ====" -ForegroundColor Cyan
+}
 
+function Show-Status($msg) {
+    Write-Host "[*] $msg" -ForegroundColor Yellow
+}
+
+function Show-Success($msg) {
+    Write-Host "[✓] $msg" -ForegroundColor Green
+}
+
+function Show-Error($msg) {
+    Write-Host "[✗] $msg" -ForegroundColor Red
+}
+
+function Show-Loading($seconds) {
+    $chars = "|/-\"
+    $end = (Get-Date).AddSeconds($seconds)
+
+    while ((Get-Date) -lt $end) {
+        foreach ($c in $chars.ToCharArray()) {
+            Write-Host -NoNewline "`rProcessing... $c"
+            Start-Sleep -Milliseconds 150
+        }
+    }
+    Write-Host ""
+}
+
+# ===== CORE INSTALL FUNCTION =====
+
+function Install-App($name, $id) {
+
+    Show-Title "INSTALL $name"
+
+    Show-Status "Preparing installation..."
+    Start-Sleep 1
+
+    Show-Status "Running winget..."
+    
     try {
-        Start-Process "winget" -ArgumentList "install --id Google.Chrome --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+        Start-Process "winget" `
+            -ArgumentList "install --id $id --exact --accept-package-agreements --accept-source-agreements" `
+            -Wait -NoNewWindow
 
-        Write-Host "Done!" -ForegroundColor Green
+        Show-Success "$name installed successfully!"
     }
     catch {
-        Write-Host "Install failed!" -ForegroundColor Red
+        Show-Error "$name installation failed!"
     }
+
+    Write-Host ""
+}
+
+# ===== APPS =====
+
+function Install-Chrome {
+    Install-App "Google Chrome" "Google.Chrome"
 }
 
 function Install-Edge {
-
-    Write-Host "Installing Microsoft Edge..." -ForegroundColor Cyan
-
-    try {
-        Start-Process "winget" -ArgumentList "install --id Microsoft.Edge --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-        Write-Host "Edge installed!" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "Install failed!" -ForegroundColor Red
-    }
+    Install-App "Microsoft Edge" "Microsoft.Edge"
 }
 
 function Install-Firefox {
-
-    Write-Host "Installing Mozilla Firefox..." -ForegroundColor Cyan
-
-    try {
-        Start-Process "winget" -ArgumentList "install --id Mozilla.Firefox --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
-
-        Write-Host "Firefox installed!" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "Install failed!" -ForegroundColor Red
-    }
+    Install-App "Mozilla Firefox" "Mozilla.Firefox"
 }
-
 
 function Install-Office {
 
-    Write-Host "Installing Microsoft Office 365..." -ForegroundColor Cyan
+    Show-Title "INSTALL MICROSOFT OFFICE 365"
+
+    Show-Status "This may take 5-15 minutes..."
+    Show-Status "Downloading & installing in background..."
+
+    # Fake loading để user không nghĩ bị treo
+    Start-Job {
+        $chars = "|/-\"
+        while ($true) {
+            foreach ($c in $chars.ToCharArray()) {
+                Write-Host -NoNewline "`rInstalling Office... $c"
+                Start-Sleep -Milliseconds 200
+            }
+        }
+    } | Out-Null
 
     try {
-        Start-Process "winget" -ArgumentList "install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements" -Wait -NoNewWindow
+        Start-Process "winget" `
+            -ArgumentList "install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements" `
+            -Wait -NoNewWindow
 
-        Write-Host "Office installed!" -ForegroundColor Green
+        Get-Job | Stop-Job | Remove-Job
+
+        Write-Host "`r" -NoNewline
+        Show-Success "Office installed successfully!"
     }
     catch {
-        Write-Host "Install failed!" -ForegroundColor Red
+        Get-Job | Stop-Job | Remove-Job
+
+        Write-Host "`r" -NoNewline
+        Show-Error "Office installation failed!"
     }
+
+    Write-Host ""
 }
