@@ -22,7 +22,7 @@ $moduleList = @(
     "network",
     "repair",
     "tools",
-    "installer"   # 
+    "install"    
 )
 
 foreach ($m in $moduleList) {
