@@ -54,6 +54,10 @@ Write-Host "[27] Open SystemInfo"
 Write-Host "[28] Show System Info GUI"
 
 Write-Host ""
+Write-Host "Install Tools"
+Write-Host "[40] Install Coc Coc Browser"
+
+Write-Host ""
 Write-Host "[0] Exit"
 Write-Host ""
 
