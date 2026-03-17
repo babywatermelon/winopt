@@ -61,6 +61,7 @@ function Show-Menu {
     Write-Host "[40] Install Google Chrome"
     Write-Host "[41] Install Edge"
     Write-Host "[42] Install Firefox"
+    Write-Host "[50] Install Office 365"
 
     Write-Host ""
     Write-Host "[0] Exit"
@@ -111,6 +112,7 @@ while ($true) {
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
+            "50" { Install-Office }
 
             # Exit
             "0" {
