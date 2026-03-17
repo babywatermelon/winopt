@@ -55,6 +55,10 @@ function Show-Menu {
     Write-Host "[26] Open Startup Apps"
     Write-Host "[27] Open SystemInfo"
     Write-Host "[28] Show System Info GUI"
+    
+    Write-Host ""
+    Write-Host "Install Tools" -ForegroundColor Yellow
+    Write-Host "[40] Install Google Chrome"
 
     Write-Host ""
     Write-Host "[0] Exit"
@@ -100,6 +104,9 @@ while ($true) {
             "26" { Open-StartupApps }
             "27" { Open-SystemInfo }
             "28" { Show-SystemInfoGUI }
+
+            # Install Tools
+            "40" { Install-Chrome }
 
             # Exit
             "0" {
