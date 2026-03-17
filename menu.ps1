@@ -1,6 +1,6 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
-# ===== LOAD MODULES =====
+# ===== LOAD MODULES (FIX TEMP PATH) =====
 $base = "$env:TEMP\winopt"
 $modules = Get-ChildItem "$base\modules\*.ps1"
 
@@ -15,68 +15,62 @@ function Pause {
     Read-Host "Press Enter to continue"
 }
 
-function Show-CenteredBlock($lines) {
-    $width = $Host.UI.RawUI.WindowSize.Width
-
-    foreach ($line in $lines) {
-        $pad = [math]::Floor(($width - $line.Length) / 2)
-        if ($pad -lt 0) { $pad = 0 }
-        Write-Host (" " * $pad + $line)
-    }
-}
-
 function Header {
     Clear-Host
-
-$header = @(
-    "████████████████████████████████████████████",
-    "          WINOPT - OPTIMIZATION TOOL         ",
-    "        Windows Optimization Utility         ",
-    "████████████████████████████████████████████",
-    ""
-)
-
-    foreach ($line in $header) {
-        Write-Host $line -ForegroundColor Green
-    }
+    Write-Host "=====================================" -ForegroundColor DarkGray
+    Write-Host "              WINOPT TOOL            " -ForegroundColor Cyan
+    Write-Host "=====================================" -ForegroundColor DarkGray
+    Write-Host ""
 }
 
 function Show-Menu {
+
     Header
 
-    Write-Host "[ SYSTEM CLEANUP ]" -ForegroundColor Cyan
-    Write-Host " 1. Clean Temp             2. Clear Prefetch" -ForegroundColor Yellow
-    Write-Host " 3. Windows Update Cache   4. Recycle Bin" -ForegroundColor Yellow
-    Write-Host " 5. Windows Logs" -ForegroundColor Yellow
-    Write-Host ""
+    Write-Host "System Cleanup" -ForegroundColor Yellow
+    Write-Host "[1] Clean Temp"
+    Write-Host "[2] Clear Prefetch"
+    Write-Host "[3] Clean Windows Update Cache"
+    Write-Host "[4] Clear Recycle Bin"
+    Write-Host "[5] Clean Windows Logs"
 
-    Write-Host "[ REPAIR TOOLS ]" -ForegroundColor Cyan
-    Write-Host " 7. SFC Scan               8. DISM Repair" -ForegroundColor Yellow
-    Write-Host " 9. Full Windows Repair" -ForegroundColor Yellow
     Write-Host ""
+    Write-Host "Repair Tools" -ForegroundColor Yellow
+    Write-Host "[7] Repair Windows (SFC)"
+    Write-Host "[8] DISM Repair"
+    Write-Host "[9] Full Windows Repair"
 
-    Write-Host "[ NETWORK TOOLS ]" -ForegroundColor Cyan
-    Write-Host "10. Flush DNS             11. Network Reset" -ForegroundColor Yellow
-    Write-Host "12. Renew IP              13. Ping Test" -ForegroundColor Yellow
     Write-Host ""
+    Write-Host "Network Tools" -ForegroundColor Yellow
+    Write-Host "[10] Flush DNS"
+    Write-Host "[11] Network Reset"
+    Write-Host "[12] Renew IP"
+    Write-Host "[13] Ping Test"
 
-    Write-Host "[ WINDOWS TOOLS ]" -ForegroundColor Cyan
-    Write-Host "20. Task Manager          21. Control Panel" -ForegroundColor Yellow
-    Write-Host "22. Device Manager        23. Services" -ForegroundColor Yellow
-    Write-Host "24. Disk Management       25. System Properties" -ForegroundColor Yellow
-    Write-Host "26. Startup Apps          27. System Info" -ForegroundColor Yellow
-    Write-Host "28. System Info GUI" -ForegroundColor Yellow
     Write-Host ""
+    Write-Host "Windows Tools" -ForegroundColor Yellow
+    Write-Host "[20] Open Task Manager"
+    Write-Host "[21] Open Control Panel"
+    Write-Host "[22] Open Device Manager"
+    Write-Host "[23] Open Services"
+    Write-Host "[24] Open Disk Management"
+    Write-Host "[25] Open System Properties"
+    Write-Host "[26] Open Startup Apps"
+    Write-Host "[27] Open SystemInfo"
+    Write-Host "[28] Show System Info GUI"
 
-    Write-Host "[ INSTALL TOOLS ]" -ForegroundColor Cyan
-    Write-Host "40. Google Chrome         41. Microsoft Edge" -ForegroundColor Yellow
-    Write-Host "42. Mozilla Firefox       50. Office 365" -ForegroundColor Yellow
     Write-Host ""
+    Write-Host "Install Tools" -ForegroundColor Yellow
+    Write-Host "[40] Install Google Chrome"
+    Write-Host "[41] Install Microsoft Edge"
+    Write-Host "[42] Install Mozilla Firefox"
+    Write-Host "[50] Install Office 365"
 
-    Write-Host "0. Exit" -ForegroundColor Red
     Write-Host ""
-    Write-Host "Select option: " -NoNewline -ForegroundColor Magenta
+    Write-Host "[0] Exit"
+    Write-Host ""
 }
+
 # ===== MAIN LOOP =====
 
 while ($true) {
@@ -129,7 +123,7 @@ while ($true) {
             "0" {
                 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
                 Start-Sleep 1
-                return
+                break
             }
 
             default {
@@ -143,7 +137,5 @@ while ($true) {
         Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
     }
 
-    if ($choice -ne "0") {
-        Pause
-    }
+    Pause
 }
