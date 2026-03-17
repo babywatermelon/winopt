@@ -112,7 +112,6 @@ function Show-SystemInfo {
     Write-Host "Name: $($cpu.Name)"
     Write-Host "Cores: $($cpu.NumberOfCores)"
     Write-Host "Threads: $($cpu.NumberOfLogicalProcessors)"
-    Write-Host "Max Clock: $($cpu.MaxClockSpeed) MHz"
 
     # ===== RAM =====
     $ram = [math]::Round($sys.TotalPhysicalMemory / 1GB, 2)
