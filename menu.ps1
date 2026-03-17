@@ -94,7 +94,7 @@ while ($true) {
             "12" { Renew-IP }
             "13" { Ping-Test }
 
-            # Windows Tools (GIỮ NGUYÊN)
+            # Windows Tools 
             "20" { Open-TaskManager }
             "21" { Open-ControlPanel }
             "22" { Open-DeviceManager }
