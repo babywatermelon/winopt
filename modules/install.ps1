@@ -1,32 +1,54 @@
-# ===== UI NHẸ =====
+# ===== UI =====
+
+function Line {
+    Write-Host "============================================" -ForegroundColor DarkGray
+}
 
 function Title($text) {
     Write-Host ""
-    Write-Host "========== $text ==========" -ForegroundColor Cyan
+    Line
+    Write-Host (" {0}" -f $text.ToUpper()) -ForegroundColor Cyan
+    Line
+}
+
+function Info($text) {
+    Write-Host "[*] $text" -ForegroundColor Yellow
 }
 
 function Done($text) {
-    Write-Host "[OK] $text" -ForegroundColor Green
+    Write-Host "[✓] $text" -ForegroundColor Green
 }
 
 function Fail($text) {
-    Write-Host "[ERROR] $text" -ForegroundColor Red
+    Write-Host "[✗] $text" -ForegroundColor Red
 }
 
-# ===== CORE (CHẠY TRỰC TIẾP WINGET) =====
+function Step($text) {
+    Write-Host "→ $text" -ForegroundColor DarkCyan
+}
+
+# ===== CORE =====
 
 function Install-App($name, $id) {
 
     Title "Installing $name"
 
+    Step "Checking package..."
+    Start-Sleep -Milliseconds 500
+
+    Step "Starting installation..."
+    Info "Please wait..."
+
     try {
         winget install --id $id --exact --accept-package-agreements --accept-source-agreements
 
-        Done "$name installed"
+        Done "$name installed successfully"
     }
     catch {
-        Fail "$name install failed"
+        Fail "$name installation failed"
     }
+
+    Write-Host ""
 }
 
 # ===== APPS =====
@@ -46,14 +68,18 @@ function Install-Firefox {
 function Install-Office {
 
     Title "Installing Microsoft Office 365"
-    Write-Host "Please wait... this may take several minutes" -ForegroundColor Yellow
+
+    Info "This may take several minutes..."
+    Info "Do not close the window"
 
     try {
         winget install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements
 
-        Done "Office installed"
+        Done "Microsoft Office installed successfully"
     }
     catch {
-        Fail "Office install failed"
+        Fail "Office installation failed"
     }
+
+    Write-Host ""
 }
