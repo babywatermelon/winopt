@@ -50,10 +50,7 @@ Write-Host "[23] Open Services"
 Write-Host "[24] Open Disk Management"
 Write-Host "[25] Open System Properties"
 Write-Host "[26] Open Startup Apps"
-
-Write-Host ""
-Write-Host "System Info"
-Write-Host "[30] Show System Info"
+Write-Host "[27] Show System Info"
 
 Write-Host ""
 Write-Host "[0] Exit"
