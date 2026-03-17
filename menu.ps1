@@ -17,9 +17,19 @@ function Pause {
 
 function Header {
     Clear-Host
-    Write-Host "=====================================" -ForegroundColor DarkGray
-    Write-Host "              WINOPT TOOL            " -ForegroundColor Cyan
-    Write-Host "=====================================" -ForegroundColor DarkGray
+
+    $width = $Host.UI.RawUI.WindowSize.Width
+    $title = "WINOPT TOOL"
+
+    # Tính padding để căn giữa
+    $padding = [math]::Floor(($width - $title.Length) / 2)
+
+    # Tạo dòng viền full width
+    $line = "=" * $width
+
+    Write-Host $line -ForegroundColor DarkGray
+    Write-Host (" " * $padding + $title) -ForegroundColor Cyan
+    Write-Host $line -ForegroundColor DarkGray
     Write-Host ""
 }
 
