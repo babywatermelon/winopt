@@ -58,7 +58,7 @@ function Show-Menu {
 
     Write-Host ""
     Write-Host "Install Tools" -ForegroundColor Yellow
-    Write-Host "[40] Install Coc Coc Browser"
+    Write-Host "[40] Install Chrome"
 
     Write-Host ""
     Write-Host "[0] Exit"
@@ -106,7 +106,7 @@ while ($true) {
             "28" { Show-SystemInfoGUI }
 
             # Install
-            "40" { Install-CocCoc }
+            "40" { Install-Chrome }
 
             # Exit
             "0" {
