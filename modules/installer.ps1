@@ -17,7 +17,13 @@ function Install-CocCoc {
 
     Write-Host "Installing Coc Coc..." -ForegroundColor Yellow
 
-    Start-Process $output -ArgumentList "/silent" -Wait
+    # thử silent trước, nếu không được thì fallback
+    try {
+        Start-Process $output -ArgumentList "/silent" -Wait
+    }
+    catch {
+        Start-Process $output
+    }
 
     Write-Host "Coc Coc installed successfully!" -ForegroundColor Green
 }
