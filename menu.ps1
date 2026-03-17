@@ -59,6 +59,8 @@ function Show-Menu {
     Write-Host ""
     Write-Host "Install Tools" -ForegroundColor Yellow
     Write-Host "[40] Install Google Chrome"
+    Write-Host "[41] Install Edge"
+    Write-Host "[42] Install Firefox"
 
     Write-Host ""
     Write-Host "[0] Exit"
@@ -107,6 +109,8 @@ while ($true) {
 
             # Install Tools
             "40" { Install-Chrome }
+            "41" { Install-Edge }
+            "42" { Install-Firefox }
 
             # Exit
             "0" {
