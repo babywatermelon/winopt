@@ -66,3 +66,24 @@ function Show-Menu {
     Write-Host "  0. Exit" -ForegroundColor Red
     Write-Host ""
 }
+
+   # Exit
+            "0" {
+                Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
+                Start-Sleep 1
+                break
+            }
+
+            default {
+                Write-Host "Invalid option!" -ForegroundColor Red
+            }
+        }
+
+    }
+    catch {
+        Write-Host ""
+        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+    }
+
+    Pause
+}
