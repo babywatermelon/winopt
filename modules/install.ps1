@@ -23,7 +23,7 @@ function Fail($text) {
 }
 
 function Wait-Animation {
-    $chars = "|/-\"
+    $chars = "|/-\\"
     for ($i = 0; $i -lt 15; $i++) {
         foreach ($c in $chars.ToCharArray()) {
             Write-Host -NoNewline "`rProcessing... $c"
@@ -80,9 +80,8 @@ function Install-Office {
     Status "This may take several minutes..."
     Status "Running in background..."
 
-    # Loading chạy song song
     $job = Start-Job {
-        $chars = "|/-\"
+        $chars = "|/-\\"
         while ($true) {
             foreach ($c in $chars.ToCharArray()) {
                 Write-Host -NoNewline "`rInstalling Office... $c"
