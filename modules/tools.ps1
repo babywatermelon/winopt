@@ -83,7 +83,7 @@ function Open-StartupApps {
 
 # -------------------------------
 
-function Show-SystemInfo {
+function Show-SystemInfoGUI{
 
     Clear-Host
     Write-Host "========== SYSTEM INFORMATION ==========" -ForegroundColor Cyan
@@ -155,7 +155,7 @@ function Show-SystemInfo {
     Write-Host "`n========================================" -ForegroundColor Cyan
 }
 
-function Open-SystemInfoGUI2 {
+function Open-SystemInfo {
     Write-Host "Opening System Information..." -ForegroundColor Yellow
     Start-Process msinfo32
 }
