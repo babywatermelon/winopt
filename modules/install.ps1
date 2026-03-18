@@ -33,16 +33,22 @@ function Install-App($name, $id) {
 
     Title "Installing $name"
 
-    Step "Checking package..."
-    Start-Sleep -Milliseconds 500
-
     Step "Starting installation..."
     Info "Please wait..."
 
     try {
-        winget install --id $id --exact --accept-package-agreements --accept-source-agreements
+        winget install --id $id --exact `
+        --accept-package-agreements `
+        --accept-source-agreements `
+        --silent `
+        -e
 
-        Done "$name installed successfully"
+        if ($LASTEXITCODE -eq 0) {
+            Done "$name installed successfully"
+        }
+        else {
+            throw "Exit code $LASTEXITCODE"
+        }
     }
     catch {
         Fail "$name installation failed"
@@ -53,6 +59,7 @@ function Install-App($name, $id) {
 
 # ===== APPS =====
 
+## Browsers
 function Install-Chrome {
     Install-App "Google Chrome" "Google.Chrome"
 }
@@ -65,22 +72,44 @@ function Install-Firefox {
     Install-App "Mozilla Firefox" "Mozilla.Firefox"
 }
 
+## Office
 function Install-Office {
-
-    Title "Installing Microsoft Office 365"
-
-    Info "This may take several minutes..."
-    Info "Do not close the window"
-
-    try {
-        winget install --id Microsoft.Office --exact --accept-package-agreements --accept-source-agreements
-
-        Done "Microsoft Office installed successfully"
-    }
-    catch {
-        Fail "Office installation failed"
-    }
-
-    Write-Host ""
+    Install-App "Microsoft Office 365" "Microsoft.Office"
 }
 
+## Hardware Tools
+function Install-CPUZ {
+    Install-App "CPU-Z" "CPUID.CPU-Z"
+}
+
+function Install-GPUZ {
+    Install-App "GPU-Z" "TechPowerUp.GPU-Z"
+}
+
+function Install-CrystalDiskInfo {
+    Install-App "CrystalDiskInfo" "CrystalDewWorld.CrystalDiskInfo"
+}
+
+function Install-HWMonitor {
+    Install-App "HWMonitor" "CPUID.HWMonitor"
+}
+# ===== BUNDLE =====
+
+function Install-All {
+
+    Title "Installing All Selected Apps"
+
+    # Browsers
+    Install-Chrome
+    Install-Firefox
+    Install-Edge
+
+    # Office
+    Install-Office
+
+    # Hardware
+    Install-CPUZ
+    Install-GPUZ
+    Install-CrystalDiskInfo
+    Install-HWMonitor
+}
