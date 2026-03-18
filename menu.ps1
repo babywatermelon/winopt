@@ -109,6 +109,10 @@ function Show-Menu {
     Draw-Line "[40] Chrome" "" $menuWidth $leftPadding
     Draw-Line "[41] Edge" "" $menuWidth $leftPadding
     Draw-Line "[42] Firefox" "" $menuWidth $leftPadding
+    Draw-Line "[41] Cpuz" "" $menuWidth $leftPadding
+    Draw-Line "[42] Gpuz" "" $menuWidth $leftPadding
+    Draw-Line "[43] CrystalDiskInfo" "" $menuWidth $leftPadding
+    Draw-Line "[44] HWMonitor" "" $menuWidth $leftPadding
     Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
@@ -289,6 +293,10 @@ while ($true) {
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
+            "43" { Install-CPUZ }
+            "44" { Install-GPUZ }
+            "45" { Install-CrystalDiskInfo }
+            "46" { Install-HWMonitor }
             "50" { Install-Office }
 
             "99" { Show-Readme }
