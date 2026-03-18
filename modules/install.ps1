@@ -27,47 +27,28 @@ function Step($text) {
     Write-Host "→ $text" -ForegroundColor DarkCyan
 }
 
-# ===== CHECK =====
-
-function Check-Winget {
-    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
-        Fail "Winget not found!"
-        return $false
-    }
-    return $true
-}
-
 # ===== CORE =====
 
 function Install-App($name, $id) {
 
-    if (-not (Check-Winget)) { return }
-
     Title "Installing $name"
 
-    Step "Starting installation..."
+    Step "Running winget..."
     Info "Please wait..."
 
-    $args = @(
-        "install",
-        "--id", $id,
-        "--exact",
-        "--accept-package-agreements",
-        "--accept-source-agreements",
-        "-e"
-    )
+    # Reset exit code
+    $global:LASTEXITCODE = 0
 
-    $process = Start-Process -FilePath "winget" `
-        -ArgumentList $args `
-        -Wait `
-        -PassThru `
-        -NoNewWindow
+    winget install --id $id --exact `
+        --accept-package-agreements `
+        --accept-source-agreements `
+        -e
 
-    if ($process.ExitCode -eq 0) {
+    if ($LASTEXITCODE -eq 0) {
         Done "$name installed successfully"
     }
     else {
-        Fail "$name installation failed (Code: $($process.ExitCode))"
+        Fail "$name installation failed (Code: $LASTEXITCODE)"
     }
 
     Write-Host ""
@@ -88,7 +69,7 @@ function Install-Firefox {
     Install-App "Mozilla Firefox" "Mozilla.Firefox"
 }
 
-## Office (GIỮ WINGET)
+## Office
 function Install-Office {
     Install-App "Microsoft Office" "Microsoft.Office"
 }
