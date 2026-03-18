@@ -122,19 +122,133 @@ function Show-Menu {
 # ===== README =====
 function Show-Readme {
 
-    Clear-Host
+$readme = @"
+===========================================================
+                    WINOPT TOOL
+        Windows Optimization & Repair Toolkit
+===========================================================
 
-    Write-Host "===== WINOPT TOOL - README =====" -ForegroundColor Cyan
-    Write-Host ""
+GIỚI THIỆU
+-----------------------------------------------------------
+WinOpt là công cụ tối ưu và sửa lỗi Windows được xây dựng 
+bằng PowerShell.
 
-    Write-Host "System Cleanup: Dọn rác hệ thống"
-    Write-Host "Repair Tools : Sửa lỗi Windows"
-    Write-Host "Network Tools: Fix mạng"
-    Write-Host "Windows Tools: Mở tool hệ thống"
-    Write-Host "Install Tools: Cài phần mềm"
-    Write-Host ""
+Mục tiêu:
+- Dọn dẹp hệ thống
+- Sửa lỗi Windows
+- Tối ưu hiệu năng
+- Cung cấp công cụ nhanh cho người dùng
 
-    Pause
+Tool phù hợp cho:
+- Người dùng phổ thông
+- Kỹ thuật viên IT
+- Người muốn tối ưu máy nhanh gọn
+
+===========================================================
+CÁC CHỨC NĂNG CHÍNH
+===========================================================
+
+[ SYSTEM CLEANUP ]
+-----------------------------------------------------------
+1. Clean Temp
+   -> Xóa file tạm trong hệ thống
+
+2. Clear Prefetch
+   -> Xóa cache Prefetch (tăng tốc load app)
+
+3. Clean Update Cache
+   -> Xóa cache Windows Update
+
+4. Clear Recycle Bin
+   -> Dọn thùng rác
+
+5. Clean Logs
+   -> Xóa log hệ thống không cần thiết
+
+
+[ REPAIR TOOLS ]
+-----------------------------------------------------------
+7. Repair Windows (SFC)
+   -> Quét và sửa file hệ thống
+
+8. DISM Repair
+   -> Khôi phục image Windows
+
+9. Full Windows Repair
+   -> Kết hợp SFC + DISM
+
+
+[ NETWORK TOOLS ]
+-----------------------------------------------------------
+10. Flush DNS
+    -> Xóa cache DNS
+
+11. Network Reset
+    -> Reset toàn bộ cấu hình mạng
+
+12. Renew IP
+    -> Cấp lại IP
+
+13. Ping Test
+    -> Kiểm tra kết nối mạng
+
+
+[ WINDOWS TOOLS ]
+-----------------------------------------------------------
+20. Task Manager
+21. Control Panel
+22. Device Manager
+23. Services
+24. Disk Management
+25. System Properties
+26. Startup Apps
+27. SystemInfo (CMD)
+28. System Info GUI
+
+-> Truy cập nhanh các công cụ hệ thống
+
+
+[ INSTALL TOOLS ]
+-----------------------------------------------------------
+40. Google Chrome
+41. Microsoft Edge
+42. Mozilla Firefox
+50. Microsoft Office 365
+
+-> Cài đặt phần mềm nhanh
+
+
+===========================================================
+TÁC DỤNG CỦA WINOPT
+===========================================================
+- Tăng tốc hệ thống
+- Giảm lỗi Windows
+- Dọn dẹp rác hiệu quả
+- Tiết kiệm thời gian thao tác
+- Tích hợp nhiều công cụ trong 1 menu
+
+===========================================================
+LƯU Ý
+===========================================================
+- Nên chạy bằng quyền Administrator
+- Một số chức năng cần internet
+- Không tắt tool khi đang repair
+
+===========================================================
+DEVELOPED BY
+WinOpt Project
+===========================================================
+
+"@
+
+    # Tạo file trong TEMP
+    $path = "$env:TEMP\WinOpt_README.txt"
+
+    # Ghi UTF8 để không lỗi tiếng Việt
+    $readme | Out-File -Encoding UTF8 $path
+
+    # Mở bằng Notepad
+    Start-Process notepad $path
 }
 
 # ===== MAIN LOOP =====
