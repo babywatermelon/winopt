@@ -83,3 +83,35 @@ function Install-Office {
 
     Write-Host ""
 }
+
+function Install-Zalo {
+
+    Title "Installing Zalo"
+
+    $url = "https://zalo.me/download/zalo-pc"
+    $output = "$env:TEMP\zalo_setup.exe"
+
+    Step "Downloading installer..."
+    try {
+        Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
+        Done "Download completed"
+    }
+    catch {
+        Fail "Download failed"
+        return
+    }
+
+    Step "Starting installation..."
+    try {
+        Start-Process $output -Wait
+        Done "Zalo installed successfully"
+    }
+    catch {
+        Fail "Installation failed"
+    }
+
+    # Cleanup
+    Remove-Item $output -ErrorAction SilentlyContinue
+
+    Write-Host ""
+}
