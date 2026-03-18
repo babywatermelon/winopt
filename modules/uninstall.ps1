@@ -1,6 +1,12 @@
 function Uninstall-App($name, $id) {
-
     Title "Uninstalling $name"
+
+    # Ask user before uninstall
+    $confirm = Read-Host "Do you want to uninstall $name? (Y/N)"
+    if ($confirm -ne "Y") {
+        Info "Uninstallation of $name was cancelled"
+        return
+    }
 
     Step "Starting uninstall..."
     Info "Please wait..."
