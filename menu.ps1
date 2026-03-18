@@ -46,8 +46,8 @@ function Draw-Line {
     $rightText = ($right | Out-String).Trim().PadRight($half)
 
     Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftText -NoNewline -ForegroundColor Green
-    Write-Host $rightText -NoNewline -ForegroundColor Yellow
+    Write-Host $leftText -NoNewline -ForegroundColor White
+    Write-Host $rightText -NoNewline -ForegroundColor White
     Write-Host " |" -ForegroundColor DarkGray
 }
 
@@ -67,8 +67,8 @@ function Draw-Section {
     $rightText = ($right | Out-String).Trim().PadRight($half)
 
     Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftText -NoNewline -ForegroundColor Cyan
-    Write-Host $rightText -NoNewline -ForegroundColor Cyan
+    Write-Host $leftText -NoNewline -ForegroundColor Yellow
+    Write-Host $rightText -NoNewline -ForegroundColor Yellow
     Write-Host " |" -ForegroundColor DarkGray
 }
 
