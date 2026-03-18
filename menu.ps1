@@ -2,150 +2,100 @@ $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
 # ===== LOAD MODULES =====
 $base = "$env:TEMP\winopt"
-$modules = Get-ChildItem "$base\modules\*.ps1" -ErrorAction SilentlyContinue
+$modules = Get-ChildItem "$base\modules\*.ps1"
 
 foreach ($module in $modules) {
     . $module.FullName
 }
 
-# ===== UI CORE =====
+# ===== UI =====
 
 function Pause {
     Write-Host ""
     Read-Host "Press Enter to continue"
 }
 
-function Header {
+function Show-Menu {
     Clear-Host
 
-    $width = $Host.UI.RawUI.WindowSize.Width
-    $title = " WINOPT TOOL "
-
-    $padding = [math]::Floor(($width - $title.Length) / 2)
-    $line = "=" * $width
-
-    Write-Host $line -ForegroundColor DarkGray
-    Write-Host (" " * $padding + $title) -ForegroundColor Cyan
-    Write-Host $line -ForegroundColor DarkGray
+    Write-Host "===== WINOPT TOOL ====="
     Write-Host ""
-}
 
-# ===== DRAW LINE =====
-function Draw-Line {
-    param(
-        $left,
-        $right,
-        $menuWidth,
-        $leftPadding
-    )
+    Write-Host "=== System Cleanup ==="
+    Write-Host "1. Clean Temp"
+    Write-Host "2. Clear Prefetch"
+    Write-Host "3. Clean Update Cache"
+    Write-Host "4. Clear Recycle Bin"
+    Write-Host "5. Clean Logs"
+    Write-Host ""
 
-    $innerWidth = $menuWidth - 4
-    $half = [math]::Floor($innerWidth / 2)
+    Write-Host "=== Repair Tools ==="
+    Write-Host "7. Repair Windows (SFC)"
+    Write-Host "8. DISM Repair"
+    Write-Host "9. Full Windows Repair"
+    Write-Host ""
 
-    $leftText  = ($left  | Out-String).Trim().PadRight($half)
-    $rightText = ($right | Out-String).Trim().PadRight($half)
+    Write-Host "=== Network Tools ==="
+    Write-Host "10. Flush DNS"
+    Write-Host "11. Network Reset"
+    Write-Host "12. Renew IP"
+    Write-Host "13. Ping Test"
+    Write-Host ""
 
-    Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftText -NoNewline -ForegroundColor White
-    Write-Host $rightText -NoNewline -ForegroundColor White
-    Write-Host " |" -ForegroundColor DarkGray
-}
+    Write-Host "=== Windows Tools ==="
+    Write-Host "20. Task Manager"
+    Write-Host "21. Control Panel"
+    Write-Host "22. Device Manager"
+    Write-Host "23. Services"
+    Write-Host "24. Disk Management"
+    Write-Host "25. System Properties"
+    Write-Host "26. Startup Apps"
+    Write-Host "27. SystemInfo"
+    Write-Host "28. System Info GUI"
+    Write-Host ""
 
-# ===== DRAW SECTION =====
-function Draw-Section {
-    param(
-        $left,
-        $right,
-        $menuWidth,
-        $leftPadding
-    )
+    Write-Host "=== Install Tools ==="
+    Write-Host "40. Chrome"
+    Write-Host "41. Edge"
+    Write-Host "42. Firefox"
+    Write-Host "50. Office 365"
+    Write-Host ""
 
-    $innerWidth = $menuWidth - 4
-    $half = [math]::Floor($innerWidth / 2)
-
-    $leftText  = ($left  | Out-String).Trim().PadRight($half)
-    $rightText = ($right | Out-String).Trim().PadRight($half)
-
-    Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftText -NoNewline -ForegroundColor Yellow
-    Write-Host $rightText -NoNewline -ForegroundColor Yellow
-    Write-Host " |" -ForegroundColor DarkGray
-}
-
-# ===== MENU =====
-function Show-Menu {
-
-    Header
-
-    $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 80
-    $leftPadding = [math]::Floor(($width - $menuWidth) / 2)
-
-    # Top border
-    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-
-    # CONTENT
-    Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
-    Draw-Line "[1] Clean Temp" "[7] Repair Windows (SFC)" $menuWidth $leftPadding
-    Draw-Line "[2] Clear Prefetch" "[8] DISM Repair" $menuWidth $leftPadding
-    Draw-Line "[3] Clean Update Cache" "[9] Full Windows Repair" $menuWidth $leftPadding
-    Draw-Line "[4] Clear Recycle Bin" "" $menuWidth $leftPadding
-    Draw-Line "[5] Clean Logs" "" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
-
-    Draw-Section "Network Tools" "Windows Tools" $menuWidth $leftPadding
-    Draw-Line "[10] Flush DNS" "[20] Task Manager" $menuWidth $leftPadding
-    Draw-Line "[11] Network Reset" "[21] Control Panel" $menuWidth $leftPadding
-    Draw-Line "[12] Renew IP" "[22] Device Manager" $menuWidth $leftPadding
-    Draw-Line "[13] Ping Test" "[23] Services" $menuWidth $leftPadding
-    Draw-Line "" "[24] Disk Management" $menuWidth $leftPadding
-    Draw-Line "" "[25] System Properties" $menuWidth $leftPadding
-    Draw-Line "" "[26] Startup Apps" $menuWidth $leftPadding
-    Draw-Line "" "[27] SystemInfo" $menuWidth $leftPadding
-    Draw-Line "" "[28] System Info GUI" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
-
-    Draw-Section "Install Tools" "" $menuWidth $leftPadding
-    Draw-Line "[40] Chrome" "" $menuWidth $leftPadding
-    Draw-Line "[41] Edge" "" $menuWidth $leftPadding
-    Draw-Line "[42] Firefox" "" $menuWidth $leftPadding
-    Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
-
-    Draw-Line "[0] Exit" "" $menuWidth $leftPadding
-
-    # Bottom border
-    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-
+    Write-Host "0. Exit"
     Write-Host ""
 }
 
 # ===== MAIN LOOP =====
+
 while ($true) {
 
     Show-Menu
 
-    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
+    Write-Host -NoNewline "Select option: "
     $choice = Read-Host
 
     try {
         switch ($choice) {
 
+            # Cleanup
             "1" { Clean-Temp }
             "2" { Clean-Prefetch }
             "3" { Clean-WindowsUpdate }
             "4" { Clear-Recycle }
             "5" { Clean-WindowsLogs }
 
+            # Repair
             "7" { Repair-SFC }
             "8" { Repair-DISM }
             "9" { Repair-Full }
 
+            # Network
             "10" { Flush-DNS }
             "11" { Network-Reset }
             "12" { Renew-IP }
             "13" { Ping-Test }
 
+            # Windows Tools
             "20" { Open-TaskManager }
             "21" { Open-ControlPanel }
             "22" { Open-DeviceManager }
@@ -156,25 +106,27 @@ while ($true) {
             "27" { Open-SystemInfo }
             "28" { Show-SystemInfoGUI }
 
+            # Install Tools
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
             "50" { Install-Office }
 
+            # Exit
             "0" {
-                Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
+                Write-Host "Exiting WinOpt..."
                 Start-Sleep 1
                 break
             }
 
             default {
-                Write-Host "Invalid option!" -ForegroundColor Red
+                Write-Host "Invalid option!"
             }
         }
     }
     catch {
         Write-Host ""
-        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Error: $($_.Exception.Message)"
     }
 
     Pause
