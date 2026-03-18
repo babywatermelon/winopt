@@ -30,8 +30,14 @@ function Step($text) {
 # ===== CORE =====
 
 function Install-App($name, $id) {
-
     Title "Installing $name"
+
+    # Hỏi người dùng trước khi cài đặt
+    $confirm = Read-Host "Bạn có muốn cài $name không? (Y/N)"
+    if ($confirm -ne "Y") {
+        Info "Đã hủy thao tác cài $name"
+        return
+    }
 
     Step "Starting installation..."
     Info "Please wait..."
@@ -55,7 +61,6 @@ function Install-App($name, $id) {
 
     Write-Host ""
 }
-
 # ===== APPS =====
 
 function Install-Chrome {
