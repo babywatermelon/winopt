@@ -30,15 +30,20 @@ function Header {
     Write-Host ""
 }
 
-# ===== DRAW MENU LINE (COLOR SUPPORT) =====
+# ===== DRAW LINE =====
 function Draw-Line {
-    param($left = "", $right = "")
+    param(
+        $left,
+        $right,
+        $menuWidth,
+        $leftPadding
+    )
 
     $innerWidth = $menuWidth - 4
     $half = [math]::Floor($innerWidth / 2)
 
-    $leftText  = $left.PadRight($half)
-    $rightText = $right.PadRight($half)
+    $leftText  = ($left  | Out-String).Trim().PadRight($half)
+    $rightText = ($right | Out-String).Trim().PadRight($half)
 
     Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftText -NoNewline -ForegroundColor Green
@@ -46,15 +51,20 @@ function Draw-Line {
     Write-Host " |" -ForegroundColor DarkGray
 }
 
-# ===== SECTION TITLE =====
+# ===== DRAW SECTION =====
 function Draw-Section {
-    param($left = "", $right = "")
+    param(
+        $left,
+        $right,
+        $menuWidth,
+        $leftPadding
+    )
 
     $innerWidth = $menuWidth - 4
     $half = [math]::Floor($innerWidth / 2)
 
-    $leftText  = $left.PadRight($half)
-    $rightText = $right.PadRight($half)
+    $leftText  = ($left  | Out-String).Trim().PadRight($half)
+    $rightText = ($right | Out-String).Trim().PadRight($half)
 
     Write-Host (" " * $leftPadding + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftText -NoNewline -ForegroundColor Cyan
@@ -67,42 +77,42 @@ function Show-Menu {
 
     Header
 
-    $global:menuWidth = 80
     $width = $Host.UI.RawUI.WindowSize.Width
-    $global:leftPadding = [math]::Floor(($width - $menuWidth) / 2)
+    $menuWidth = 80
+    $leftPadding = [math]::Floor(($width - $menuWidth) / 2)
 
     # Top border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
 
-    # ===== CONTENT =====
-    Draw-Section "System Cleanup"         "Repair Tools"
-    Draw-Line "[1] Clean Temp"            "[7] Repair Windows (SFC)"
-    Draw-Line "[2] Clear Prefetch"        "[8] DISM Repair"
-    Draw-Line "[3] Clean Update Cache"    "[9] Full Windows Repair"
-    Draw-Line "[4] Clear Recycle Bin"     ""
-    Draw-Line "[5] Clean Logs"            ""
-    Draw-Line "" ""
+    # CONTENT
+    Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
+    Draw-Line "[1] Clean Temp" "[7] Repair Windows (SFC)" $menuWidth $leftPadding
+    Draw-Line "[2] Clear Prefetch" "[8] DISM Repair" $menuWidth $leftPadding
+    Draw-Line "[3] Clean Update Cache" "[9] Full Windows Repair" $menuWidth $leftPadding
+    Draw-Line "[4] Clear Recycle Bin" "" $menuWidth $leftPadding
+    Draw-Line "[5] Clean Logs" "" $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
 
-    Draw-Section "Network Tools"          "Windows Tools"
-    Draw-Line "[10] Flush DNS"            "[20] Task Manager"
-    Draw-Line "[11] Network Reset"        "[21] Control Panel"
-    Draw-Line "[12] Renew IP"             "[22] Device Manager"
-    Draw-Line "[13] Ping Test"            "[23] Services"
-    Draw-Line ""                          "[24] Disk Management"
-    Draw-Line ""                          "[25] System Properties"
-    Draw-Line ""                          "[26] Startup Apps"
-    Draw-Line ""                          "[27] SystemInfo"
-    Draw-Line ""                          "[28] System Info GUI"
-    Draw-Line "" ""
+    Draw-Section "Network Tools" "Windows Tools" $menuWidth $leftPadding
+    Draw-Line "[10] Flush DNS" "[20] Task Manager" $menuWidth $leftPadding
+    Draw-Line "[11] Network Reset" "[21] Control Panel" $menuWidth $leftPadding
+    Draw-Line "[12] Renew IP" "[22] Device Manager" $menuWidth $leftPadding
+    Draw-Line "[13] Ping Test" "[23] Services" $menuWidth $leftPadding
+    Draw-Line "" "[24] Disk Management" $menuWidth $leftPadding
+    Draw-Line "" "[25] System Properties" $menuWidth $leftPadding
+    Draw-Line "" "[26] Startup Apps" $menuWidth $leftPadding
+    Draw-Line "" "[27] SystemInfo" $menuWidth $leftPadding
+    Draw-Line "" "[28] System Info GUI" $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
 
-    Draw-Section "Install Tools"          ""
-    Draw-Line "[40] Chrome"               ""
-    Draw-Line "[41] Edge"                 ""
-    Draw-Line "[42] Firefox"              ""
-    Draw-Line "[50] Office 365"           ""
-    Draw-Line "" ""
+    Draw-Section "Install Tools" "" $menuWidth $leftPadding
+    Draw-Line "[40] Chrome" "" $menuWidth $leftPadding
+    Draw-Line "[41] Edge" "" $menuWidth $leftPadding
+    Draw-Line "[42] Firefox" "" $menuWidth $leftPadding
+    Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
 
-    Draw-Line "[0] Exit"                  ""
+    Draw-Line "[0] Exit" "" $menuWidth $leftPadding
 
     # Bottom border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
@@ -121,25 +131,21 @@ while ($true) {
     try {
         switch ($choice) {
 
-            # Cleanup
             "1" { Clean-Temp }
             "2" { Clean-Prefetch }
             "3" { Clean-WindowsUpdate }
             "4" { Clear-Recycle }
             "5" { Clean-WindowsLogs }
 
-            # Repair
             "7" { Repair-SFC }
             "8" { Repair-DISM }
             "9" { Repair-Full }
 
-            # Network
             "10" { Flush-DNS }
             "11" { Network-Reset }
             "12" { Renew-IP }
             "13" { Ping-Test }
 
-            # Windows Tools
             "20" { Open-TaskManager }
             "21" { Open-ControlPanel }
             "22" { Open-DeviceManager }
@@ -150,13 +156,11 @@ while ($true) {
             "27" { Open-SystemInfo }
             "28" { Show-SystemInfoGUI }
 
-            # Install Tools
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
             "50" { Install-Office }
 
-            # Exit
             "0" {
                 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
                 Start-Sleep 1
