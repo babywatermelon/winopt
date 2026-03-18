@@ -245,7 +245,8 @@ WinOpt Project
     $path = "$env:TEMP\WinOpt_README.txt"
 
     # Ghi UTF8 để không lỗi tiếng Việt
-    $readme | Out-File -Encoding UTF8 $path
+    $Utf8NoBom = New-Object System.Text.UTF8Encoding $true
+    [System.IO.File]::WriteAllText($path, $readme, $Utf8NoBom)
 
     # Mở bằng Notepad
     Start-Process notepad $path
