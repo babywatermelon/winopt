@@ -88,46 +88,26 @@ function Install-Zalo {
 
     Title "Installing Zalo"
 
-    $url = "https://stc-zaloid.zdn.vn/zalo-pc/ZaloSetup.exe"
-    $output = "$env:TEMP\ZaloSetup.exe"
-
-    Step "Downloading installer..."
+    Step "Installing via winget..."
+    Info "Please wait..."
 
     try {
-        Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing -ErrorAction Stop
+        winget install --id VNGCorp.Zalo --exact `
+        --accept-package-agreements `
+        --accept-source-agreements `
+        --silent `
+        -e
 
-        if (!(Test-Path $output)) {
-            throw "File not found after download"
+        if ($LASTEXITCODE -eq 0) {
+            Done "Zalo installed successfully"
         }
-
-        Done "Download completed"
+        else {
+            throw "Winget failed with exit code $LASTEXITCODE"
+        }
     }
     catch {
-        Fail "Download failed"
-        return
+        Fail "Zalo installation failed"
     }
-
-    Step "Starting installation..."
-
-    try {
-        Start-Process -FilePath $output -ArgumentList "/silent" -Wait -ErrorAction Stop
-        Done "Zalo installed successfully"
-    }
-    catch {
-        Fail "Installation failed (trying normal mode...)"
-
-        # fallback nếu silent không chạy
-        try {
-            Start-Process -FilePath $output -Wait
-            Done "Zalo installed (manual mode)"
-        }
-        catch {
-            Fail "Installation failed completely"
-        }
-    }
-
-    # Cleanup
-    Remove-Item $output -Force -ErrorAction SilentlyContinue
 
     Write-Host ""
 }
