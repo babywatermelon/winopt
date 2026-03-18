@@ -109,10 +109,10 @@ function Show-Menu {
     Draw-Line "[40] Chrome" "" $menuWidth $leftPadding
     Draw-Line "[41] Edge" "" $menuWidth $leftPadding
     Draw-Line "[42] Firefox" "" $menuWidth $leftPadding
-    Draw-Line "[41] Cpuz" "" $menuWidth $leftPadding
-    Draw-Line "[42] Gpuz" "" $menuWidth $leftPadding
-    Draw-Line "[43] CrystalDiskInfo" "" $menuWidth $leftPadding
-    Draw-Line "[44] HWMonitor" "" $menuWidth $leftPadding
+    Draw-Line "[43] Cpuz" "" $menuWidth $leftPadding
+    Draw-Line "[44] Gpuz" "" $menuWidth $leftPadding
+    Draw-Line "[45] CrystalDiskInfo" "" $menuWidth $leftPadding
+    Draw-Line "[46] HWMonitor" "" $menuWidth $leftPadding
     Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
