@@ -109,7 +109,6 @@ function Show-Menu {
     Draw-Line "[40] Chrome" "" $menuWidth $leftPadding
     Draw-Line "[41] Edge" "" $menuWidth $leftPadding
     Draw-Line "[42] Firefox" "" $menuWidth $leftPadding
-    Draw-Line "[43] Zalo" "" $menuWidth $leftPadding
     Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
@@ -290,7 +289,6 @@ while ($true) {
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
-            "43" { Install-Zalo }
             "50" { Install-Office }
 
             "99" { Show-Readme }
