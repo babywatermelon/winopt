@@ -128,69 +128,69 @@ $readme = @"
         Windows Optimization & Repair Toolkit
 ===========================================================
 
-GIỚI THIỆU
+GIOI THIEU
 -----------------------------------------------------------
-WinOpt là công cụ tối ưu và sửa lỗi Windows được xây dựng 
-bằng PowerShell.
+WinOpt la cong cu toi uu va sua loi Windows duoc xay dung
+bang PowerShell.
 
-Mục tiêu:
-- Dọn dẹp hệ thống
-- Sửa lỗi Windows
-- Tối ưu hiệu năng
-- Cung cấp công cụ nhanh cho người dùng
+Muc tieu:
+- Don dep he thong
+- Sua loi Windows
+- Toi uu hieu nang
+- Cung cap cong cu nhanh cho nguoi dung
 
-Tool phù hợp cho:
-- Người dùng phổ thông
-- Kỹ thuật viên IT
-- Người muốn tối ưu máy nhanh gọn
+Tool phu hop cho:
+- Nguoi dung pho thong
+- Ky thuat vien IT
+- Nguoi muon toi uu may nhanh gon
 
 ===========================================================
-CÁC CHỨC NĂNG CHÍNH
+CAC CHUC NANG CHINH
 ===========================================================
 
 [ SYSTEM CLEANUP ]
 -----------------------------------------------------------
 1. Clean Temp
-   -> Xóa file tạm trong hệ thống
+   -> Xoa file tam trong he thong
 
 2. Clear Prefetch
-   -> Xóa cache Prefetch (tăng tốc load app)
+   -> Xoa cache Prefetch (tang toc load app)
 
 3. Clean Update Cache
-   -> Xóa cache Windows Update
+   -> Xoa cache Windows Update
 
 4. Clear Recycle Bin
-   -> Dọn thùng rác
+   -> Don thung rac
 
 5. Clean Logs
-   -> Xóa log hệ thống không cần thiết
+   -> Xoa log he thong khong can thiet
 
 
 [ REPAIR TOOLS ]
 -----------------------------------------------------------
 7. Repair Windows (SFC)
-   -> Quét và sửa file hệ thống
+   -> Quet va sua file he thong
 
 8. DISM Repair
-   -> Khôi phục image Windows
+   -> Khoi phuc image Windows
 
 9. Full Windows Repair
-   -> Kết hợp SFC + DISM
+   -> Ket hop SFC + DISM
 
 
 [ NETWORK TOOLS ]
 -----------------------------------------------------------
 10. Flush DNS
-    -> Xóa cache DNS
+    -> Xoa cache DNS
 
 11. Network Reset
-    -> Reset toàn bộ cấu hình mạng
+    -> Reset toan bo cau hinh mang
 
 12. Renew IP
-    -> Cấp lại IP
+    -> Cap lai IP
 
 13. Ping Test
-    -> Kiểm tra kết nối mạng
+    -> Kiem tra ket noi mang
 
 
 [ WINDOWS TOOLS ]
@@ -205,7 +205,7 @@ CÁC CHỨC NĂNG CHÍNH
 27. SystemInfo (CMD)
 28. System Info GUI
 
--> Truy cập nhanh các công cụ hệ thống
+-> Truy cap nhanh cac cong cu he thong
 
 
 [ INSTALL TOOLS ]
@@ -215,24 +215,24 @@ CÁC CHỨC NĂNG CHÍNH
 42. Mozilla Firefox
 50. Microsoft Office 365
 
--> Cài đặt phần mềm nhanh
+-> Cai dat phan mem nhanh
 
 
 ===========================================================
-TÁC DỤNG CỦA WINOPT
+TAC DUNG CUA WINOPT
 ===========================================================
-- Tăng tốc hệ thống
-- Giảm lỗi Windows
-- Dọn dẹp rác hiệu quả
-- Tiết kiệm thời gian thao tác
-- Tích hợp nhiều công cụ trong 1 menu
+- Tang toc he thong
+- Giam loi Windows
+- Don dep rac hieu qua
+- Tiet kiem thoi gian thao tac
+- Tich hop nhieu cong cu trong 1 menu
 
 ===========================================================
-LƯU Ý
+LUU Y
 ===========================================================
-- Nên chạy bằng quyền Administrator
-- Một số chức năng cần internet
-- Không tắt tool khi đang repair
+- Nen chay bang quyen Administrator
+- Mot so chuc nang can internet
+- Khong tat tool khi dang repair
 
 ===========================================================
 DEVELOPED BY
@@ -241,14 +241,11 @@ WinOpt Project
 
 "@
 
-    # Tạo file trong TEMP
     $path = "$env:TEMP\WinOpt_README.txt"
 
-    # Ghi UTF8 để không lỗi tiếng Việt
-    $Utf8NoBom = New-Object System.Text.UTF8Encoding $true
-    [System.IO.File]::WriteAllText($path, $readme, $Utf8NoBom)
+    # Ghi file (luc nay khong can lo encoding nua)
+    $readme | Out-File -Encoding ASCII $path
 
-    # Mở bằng Notepad
     Start-Process notepad $path
 }
 
