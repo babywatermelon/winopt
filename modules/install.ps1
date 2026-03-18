@@ -84,30 +84,3 @@ function Install-Office {
     Write-Host ""
 }
 
-function Install-Zalo {
-
-    Title "Installing Zalo"
-
-    Step "Installing via winget..."
-    Info "Please wait..."
-
-    try {
-        winget install --id VNGCorp.Zalo --exact `
-        --accept-package-agreements `
-        --accept-source-agreements `
-        --silent `
-        -e
-
-        if ($LASTEXITCODE -eq 0) {
-            Done "Zalo installed successfully"
-        }
-        else {
-            throw "Winget failed with exit code $LASTEXITCODE"
-        }
-    }
-    catch {
-        Fail "Zalo installation failed"
-    }
-
-    Write-Host ""
-}
