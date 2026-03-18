@@ -96,3 +96,19 @@ function Install-Office {
 
     Write-Host ""
 }
+
+function Install-CPUZ {
+    Install-App "CPU-Z" "CPUID.CPU-Z"
+}
+
+function Install-GPUZ {
+    Install-App "GPU-Z" "TechPowerUp.GPU-Z"
+}
+
+function Install-HWMonitor {
+    Install-App "HWMonitor" "CPUID.HWMonitor"
+}
+
+function Install-CrystalDiskInfo {
+    Install-App "CrystalDiskInfo" "CrystalDewWorld.CrystalDiskInfo"
+}
