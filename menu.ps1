@@ -44,12 +44,7 @@ function Header {
 
 # ===== DRAW LINE =====
 function Draw-Line {
-    param(
-        $left,
-        $right,
-        $menuWidth,
-        $leftPadding
-    )
+    param($left, $right, $menuWidth, $leftPadding)
 
     $innerWidth = $menuWidth - 4
     $half = [math]::Floor($innerWidth / 2)
@@ -65,12 +60,7 @@ function Draw-Line {
 
 # ===== DRAW SECTION =====
 function Draw-Section {
-    param(
-        $left,
-        $right,
-        $menuWidth,
-        $leftPadding
-    )
+    param($left, $right, $menuWidth, $leftPadding)
 
     $innerWidth = $menuWidth - 4
     $half = [math]::Floor($innerWidth / 2)
@@ -93,10 +83,8 @@ function Show-Menu {
     $menuWidth = 80
     $leftPadding = [math]::Floor(($width - $menuWidth) / 2)
 
-    # Top border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
 
-    # CONTENT
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp" "[7] Repair Windows (SFC)" $menuWidth $leftPadding
     Draw-Line "[2] Clear Prefetch" "[8] DISM Repair" $menuWidth $leftPadding
@@ -124,12 +112,29 @@ function Show-Menu {
     Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
 
-    # Bottom border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-
     Write-Host ""
+}
+
+# ===== README =====
+function Show-Readme {
+
+    Clear-Host
+
+    Write-Host "===== WINOPT TOOL - README =====" -ForegroundColor Cyan
+    Write-Host ""
+
+    Write-Host "System Cleanup: Dọn rác hệ thống"
+    Write-Host "Repair Tools : Sửa lỗi Windows"
+    Write-Host "Network Tools: Fix mạng"
+    Write-Host "Windows Tools: Mở tool hệ thống"
+    Write-Host "Install Tools: Cài phần mềm"
+    Write-Host ""
+
+    Pause
 }
 
 # ===== MAIN LOOP =====
@@ -172,6 +177,8 @@ while ($true) {
             "41" { Install-Edge }
             "42" { Install-Firefox }
             "50" { Install-Office }
+
+            "99" { Show-Readme }
 
             "0" {
                 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
