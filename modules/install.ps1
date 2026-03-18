@@ -88,12 +88,18 @@ function Install-Zalo {
 
     Title "Installing Zalo"
 
-    $url = "https://zalo.me/download/zalo-pc"
-    $output = "$env:TEMP\zalo_setup.exe"
+    $url = "https://stc-zaloid.zdn.vn/zalo-pc/ZaloSetup.exe"
+    $output = "$env:TEMP\ZaloSetup.exe"
 
     Step "Downloading installer..."
+
     try {
-        Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing
+        Invoke-WebRequest -Uri $url -OutFile $output -UseBasicParsing -ErrorAction Stop
+
+        if (!(Test-Path $output)) {
+            throw "File not found after download"
+        }
+
         Done "Download completed"
     }
     catch {
@@ -102,16 +108,26 @@ function Install-Zalo {
     }
 
     Step "Starting installation..."
+
     try {
-        Start-Process $output -Wait
+        Start-Process -FilePath $output -ArgumentList "/silent" -Wait -ErrorAction Stop
         Done "Zalo installed successfully"
     }
     catch {
-        Fail "Installation failed"
+        Fail "Installation failed (trying normal mode...)"
+
+        # fallback nếu silent không chạy
+        try {
+            Start-Process -FilePath $output -Wait
+            Done "Zalo installed (manual mode)"
+        }
+        catch {
+            Fail "Installation failed completely"
+        }
     }
 
     # Cleanup
-    Remove-Item $output -ErrorAction SilentlyContinue
+    Remove-Item $output -Force -ErrorAction SilentlyContinue
 
     Write-Host ""
 }
