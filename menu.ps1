@@ -131,8 +131,6 @@ $readme = @"
                     WINOPT TOOL
         Windows Optimization & Repair Toolkit
 ===========================================================
-
-Nguyen Minh Tri | 0789649285 | triclgtyahoo@gmail.com
 -----------------------------------------------------------
 WinOpt la cong cu toi uu va sua loi Windows duoc xay dung
 bang PowerShell.
@@ -241,7 +239,7 @@ LUU Y
 
 ===========================================================
 DEVELOPED BY
-WinOpt Project
+Nguyen Minh Tri | 0789649285 | triclgtyahoo@gmail.com
 ===========================================================
 
 "@
