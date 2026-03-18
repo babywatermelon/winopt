@@ -2,10 +2,22 @@ $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
 # ===== LOAD MODULES =====
 $base = "$env:TEMP\winopt"
-$modules = Get-ChildItem "$base\modules\*.ps1"
+$modulePath = Join-Path $base "modules"
 
-foreach ($module in $modules) {
-    . $module.FullName
+if (Test-Path $modulePath) {
+    $modules = Get-ChildItem "$modulePath\*.ps1" -ErrorAction SilentlyContinue
+
+    foreach ($module in $modules) {
+        try {
+            . $module.FullName
+        }
+        catch {
+            Write-Host "Error loading module: $($module.Name)"
+        }
+    }
+}
+else {
+    Write-Host "Modules folder not found: $modulePath"
 }
 
 # ===== UI =====
