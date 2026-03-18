@@ -32,10 +32,10 @@ function Step($text) {
 function Install-App($name, $id) {
     Title "Installing $name"
 
-    # Hỏi người dùng trước khi cài đặt
-    $confirm = Read-Host "Bạn có muốn cài $name không? (Y/N)"
+    # Ask user before installation
+    $confirm = Read-Host "Do you want to install $name? (Y/N)"
     if ($confirm -ne "Y") {
-        Info "Đã hủy thao tác cài $name"
+        Info "Installation of $name was cancelled"
         return
     }
 
