@@ -114,7 +114,8 @@ function Show-Menu {
     Draw-Line "[45] CrystalDiskInfo" "[65] Remove CrystalDiskInfo" $menuWidth $leftPadding
     Draw-Line "[46] HWMonitor" "[66] Remove HWMonitor" $menuWidth $leftPadding
     Draw-Line "[50] Office 365" "[67] Remove Office" $menuWidth $leftPadding
-
+    Draw-Line "" "" $menuWidth $leftPadding
+    
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
 
