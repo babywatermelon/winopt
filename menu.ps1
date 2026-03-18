@@ -128,7 +128,7 @@ $readme = @"
         Windows Optimization & Repair Toolkit
 ===========================================================
 
-GIOI THIEU
+Nguyen Minh Tri | 0789649285 | triclgtyahoo@gmail.com
 -----------------------------------------------------------
 WinOpt la cong cu toi uu va sua loi Windows duoc xay dung
 bang PowerShell.
@@ -137,6 +137,7 @@ Muc tieu:
 - Don dep he thong
 - Sua loi Windows
 - Toi uu hieu nang
+- Cai dat phan mem
 - Cung cap cong cu nhanh cho nguoi dung
 
 Tool phu hop cho:
