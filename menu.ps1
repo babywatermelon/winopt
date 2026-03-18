@@ -117,14 +117,10 @@ function Show-Menu {
     Draw-Line "" "" $menuWidth $leftPadding
 
     Draw-Section "Uninstall Tools" "" $menuWidth $leftPadding
-    Draw-Line "[60] Remove Chrome" "" $menuWidth $leftPadding
-    Draw-Line "[61] Remove Edge" "" $menuWidth $leftPadding
-    Draw-Line "[62] Remove Firefox" "" $menuWidth $leftPadding
-    Draw-Line "[63] Remove CPUZ" "" $menuWidth $leftPadding
-    Draw-Line "[64] Remove GPUZ" "" $menuWidth $leftPadding
-    Draw-Line "[65] Remove CrystalDiskInfo" "" $menuWidth $leftPadding
-    Draw-Line "[66] Remove HWMonitor" "" $menuWidth $leftPadding
-    Draw-Line "[67] Remove Office" "" $menuWidth $leftPadding
+    Draw-Line "[60] Remove Chrome" "[64] Remove GPUZ" $menuWidth $leftPadding
+    Draw-Line "[61] Remove Edge" "[65] Remove CrystalDiskInfo" $menuWidth $leftPadding
+    Draw-Line "[62] Remove Firefox" "[66] Remove HWMonitor" $menuWidth $leftPadding
+    Draw-Line "[63] Remove CPUZ" "[67] Remove Office" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
