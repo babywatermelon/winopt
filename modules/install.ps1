@@ -27,31 +27,47 @@ function Step($text) {
     Write-Host "→ $text" -ForegroundColor DarkCyan
 }
 
+# ===== CHECK =====
+
+function Check-Winget {
+    if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
+        Fail "Winget not found!"
+        return $false
+    }
+    return $true
+}
+
 # ===== CORE =====
 
 function Install-App($name, $id) {
+
+    if (-not (Check-Winget)) { return }
 
     Title "Installing $name"
 
     Step "Starting installation..."
     Info "Please wait..."
 
-    try {
-        winget install --id $id --exact `
-        --accept-package-agreements `
-        --accept-source-agreements `
-        --silent `
-        -e
+    $args = @(
+        "install",
+        "--id", $id,
+        "--exact",
+        "--accept-package-agreements",
+        "--accept-source-agreements",
+        "-e"
+    )
 
-        if ($LASTEXITCODE -eq 0) {
-            Done "$name installed successfully"
-        }
-        else {
-            throw "Exit code $LASTEXITCODE"
-        }
+    $process = Start-Process -FilePath "winget" `
+        -ArgumentList $args `
+        -Wait `
+        -PassThru `
+        -NoNewWindow
+
+    if ($process.ExitCode -eq 0) {
+        Done "$name installed successfully"
     }
-    catch {
-        Fail "$name installation failed"
+    else {
+        Fail "$name installation failed (Code: $($process.ExitCode))"
     }
 
     Write-Host ""
@@ -72,9 +88,9 @@ function Install-Firefox {
     Install-App "Mozilla Firefox" "Mozilla.Firefox"
 }
 
-## Office
+## Office (GIỮ WINGET)
 function Install-Office {
-    Install-App "Microsoft Office 365" "Microsoft.Office"
+    Install-App "Microsoft Office" "Microsoft.Office"
 }
 
 ## Hardware Tools
@@ -93,21 +109,19 @@ function Install-CrystalDiskInfo {
 function Install-HWMonitor {
     Install-App "HWMonitor" "CPUID.HWMonitor"
 }
+
 # ===== BUNDLE =====
 
 function Install-All {
 
     Title "Installing All Selected Apps"
 
-    # Browsers
     Install-Chrome
     Install-Firefox
     Install-Edge
 
-    # Office
     Install-Office
 
-    # Hardware
     Install-CPUZ
     Install-GPUZ
     Install-CrystalDiskInfo
