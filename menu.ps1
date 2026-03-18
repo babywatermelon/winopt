@@ -1,18 +1,15 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
-# ===== LOAD MODULES =====
+# ===== LOAD MODULES (FIX TEMP PATH) =====
 $base = "$env:TEMP\winopt"
 $modules = Get-ChildItem "$base\modules\*.ps1"
+
 foreach ($module in $modules) {
     . $module.FullName
 }
 
-# ===== COLOR FUNCTION =====
-function Write-Color($text, $colorCode) {
-    Write-Host ("`e[" + $colorCode + "m" + $text + "`e[0m")
-}
-
 # ===== UI =====
+
 function Pause {
     Write-Host ""
     Read-Host "Press Enter to continue"
@@ -20,94 +17,110 @@ function Pause {
 
 function Header {
     Clear-Host
+
     $width = $Host.UI.RawUI.WindowSize.Width
     $title = "WINOPT TOOL"
+
+    # Tính padding để căn giữa
     $padding = [math]::Floor(($width - $title.Length) / 2)
+
+    # Tạo dòng viền full width
     $line = "=" * $width
 
-    Write-Color $line 90   # xám nhạt
-    Write-Color (" " * $padding + $title) 36   # cyan
-    Write-Color $line 90
+    Write-Host $line -ForegroundColor DarkGray
+    Write-Host (" " * $padding + $title) -ForegroundColor Cyan
+    Write-Host $line -ForegroundColor DarkGray
     Write-Host ""
 }
 
 function Show-Menu {
+
     Header
+
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 80
+    $menuWidth = 80   # chỉnh độ rộng khung
     $leftPadding = [math]::Floor(($width - $menuWidth) / 2)
 
-    function Draw-Line($left = "", $right = "", $leftColor = 37, $rightColor = 37) {
+    function Draw-Line($left = "", $right = "") {
         $innerWidth = $menuWidth - 4
         $half = [math]::Floor($innerWidth / 2)
+
         $leftText  = $left.PadRight($half)
         $rightText = $right.PadRight($half)
 
-        $line = (" " * $leftPadding + "| " + $leftText + $rightText + " |")
-        # tô màu riêng cho cột trái/phải
-        $colored = ("`e[" + $leftColor + "m" + $leftText + "`e[0m" +
-                    "`e[" + $rightColor + "m" + $rightText + "`e[0m")
-        Write-Host (" " * $leftPadding + "| " + $colored + " |")
+        Write-Host (" " * $leftPadding + "| " + $leftText + $rightText + " |")
     }
 
     # Top border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+")
 
     # ===== CONTENT =====
-    Draw-Line "System Cleanup" "Repair Tools" 36 35
-    Draw-Line "[1] Clean Temp" "[7] Repair Windows (SFC)" 32 33
-    Draw-Line "[2] Clear Prefetch" "[8] DISM Repair" 32 33
-    Draw-Line "[3] Clean Update Cache" "[9] Full Windows Repair" 32 33
-    Draw-Line "[4] Clear Recycle Bin" "" 32 37
-    Draw-Line "[5] Clean Logs" "" 32 37
-    Draw-Line "" "" 37 37
+    Draw-Line "System Cleanup"         "Repair Tools"
+    Draw-Line "[1] Clean Temp"         "[7] Repair Windows (SFC)"
+    Draw-Line "[2] Clear Prefetch"     "[8] DISM Repair"
+    Draw-Line "[3] Clean Update Cache" "[9] Full Windows Repair"
+    Draw-Line "[4] Clear Recycle Bin"  ""
+    Draw-Line "[5] Clean Logs"         ""
+    Draw-Line "" ""
 
-    Draw-Line "Network Tools" "Windows Tools" 36 35
-    Draw-Line "[10] Flush DNS" "[20] Task Manager" 34 33
-    Draw-Line "[11] Network Reset" "[21] Control Panel" 34 33
-    Draw-Line "[12] Renew IP" "[22] Device Manager" 34 33
-    Draw-Line "[13] Ping Test" "[23] Services" 34 33
-    Draw-Line "" "[24] Disk Management" 37 33
-    Draw-Line "" "[25] System Properties" 37 33
-    Draw-Line "" "[26] Startup Apps" 37 33
-    Draw-Line "" "[27] SystemInfo" 37 33
-    Draw-Line "" "[28] System Info GUI" 37 33
-    Draw-Line "" "" 37 37
+    Draw-Line "Network Tools"          "Windows Tools"
+    Draw-Line "[10] Flush DNS"         "[20] Task Manager"
+    Draw-Line "[11] Network Reset"     "[21] Control Panel"
+    Draw-Line "[12] Renew IP"          "[22] Device Manager"
+    Draw-Line "[13] Ping Test"         "[23] Services"
+    Draw-Line ""                       "[24] Disk Management"
+    Draw-Line ""                       "[25] System Properties"
+    Draw-Line ""                       "[26] Startup Apps"
+    Draw-Line ""                       "[27] SystemInfo"
+    Draw-Line ""                       "[28] System Info GUI"
+    Draw-Line "" ""
 
-    Draw-Line "Install Tools" "" 36 37
-    Draw-Line "[40] Chrome" "" 32 37
-    Draw-Line "[41] Edge" "" 32 37
-    Draw-Line "[42] Firefox" "" 32 37
-    Draw-Line "[50] Office 365" "" 32 37
-    Draw-Line "" "" 37 37
+    Draw-Line "Install Tools"          ""
+    Draw-Line "[40] Chrome"            ""
+    Draw-Line "[41] Edge"              ""
+    Draw-Line "[42] Firefox"           ""
+    Draw-Line "[50] Office 365"        ""
+    Draw-Line "" ""
 
-    Draw-Line "[0] Exit" "" 31 37
+    Draw-Line "[0] Exit"               ""
 
     # Bottom border
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+")
+
     Write-Host ""
 }
-
 # ===== MAIN LOOP =====
+
 while ($true) {
+
     Show-Menu
-    Write-Color "Select option: " 36
+
+    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
     $choice = Read-Host
 
     try {
+
         switch ($choice) {
+
+            # Cleanup
             "1" { Clean-Temp }
-            "2" { Clean-Prefetch }
+"2" { Clean-Prefetch }
             "3" { Clean-WindowsUpdate }
             "4" { Clear-Recycle }
             "5" { Clean-WindowsLogs }
+
+            # Repair
             "7" { Repair-SFC }
             "8" { Repair-DISM }
             "9" { Repair-Full }
+
+            # Network
             "10" { Flush-DNS }
             "11" { Network-Reset }
             "12" { Renew-IP }
             "13" { Ping-Test }
+
+            # Windows Tools
             "20" { Open-TaskManager }
             "21" { Open-ControlPanel }
             "22" { Open-DeviceManager }
@@ -117,22 +130,30 @@ while ($true) {
             "26" { Open-StartupApps }
             "27" { Open-SystemInfo }
             "28" { Show-SystemInfoGUI }
+
+            # Install Tools
             "40" { Install-Chrome }
             "41" { Install-Edge }
             "42" { Install-Firefox }
             "50" { Install-Office }
+
+            # Exit
             "0" {
-                Write-Color "Exiting WinOpt..." 33
+                Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
                 Start-Sleep 1
                 break
             }
+
             default {
-                Write-Color "Invalid option!" 31
+                Write-Host "Invalid option!" -ForegroundColor Red
             }
         }
+
     }
     catch {
-        Write-Color ("Error: $($_.Exception.Message)") 31
+        Write-Host ""
+        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
     }
+
     Pause
 }
