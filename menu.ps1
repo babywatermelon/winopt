@@ -116,6 +116,17 @@ function Show-Menu {
     Draw-Line "[50] Office 365" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    Draw-Section "Uninstall Tools" "" $menuWidth $leftPadding
+    Draw-Line "[60] Remove Chrome" "" $menuWidth $leftPadding
+    Draw-Line "[61] Remove Edge" "" $menuWidth $leftPadding
+    Draw-Line "[62] Remove Firefox" "" $menuWidth $leftPadding
+    Draw-Line "[63] Remove CPUZ" "" $menuWidth $leftPadding
+    Draw-Line "[64] Remove GPUZ" "" $menuWidth $leftPadding
+    Draw-Line "[65] Remove CrystalDiskInfo" "" $menuWidth $leftPadding
+    Draw-Line "[66] Remove HWMonitor" "" $menuWidth $leftPadding
+    Draw-Line "[67] Remove Office" "" $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
+
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
 
@@ -298,6 +309,15 @@ while ($true) {
             "45" { Install-CrystalDiskInfo }
             "46" { Install-HWMonitor }
             "50" { Install-Office }
+
+            "60" { Uninstall-Chrome }
+            "61" { Uninstall-Edge }
+            "62" { Uninstall-Firefox }
+            "63" { Uninstall-CPUZ }
+            "64" { Uninstall-GPUZ }
+            "65" { Uninstall-CrystalDiskInfo }
+            "66" { Uninstall-HWMonitor }
+            "67" { Uninstall-Office }
 
             "99" { Show-Readme }
 
