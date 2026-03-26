@@ -1,5 +1,5 @@
 # ==========================================
-# EDGE EXTENSION CLEANER (FULL CLEAN)
+# EDGE EXTENSION CLEANER (FIXED REAL CLEAN)
 # ==========================================
 
 function Remove-EdgeExtension {
@@ -7,10 +7,13 @@ function Remove-EdgeExtension {
     Clear-Host
     Write-Host "===== EDGE EXTENSION CLEANER =====" -ForegroundColor Cyan
 
-    # Stop Edge
-    taskkill /f /im msedge.exe 2>$null
+    # Kill Edge mạnh hơn
+    Get-Process msedge -ErrorAction SilentlyContinue | Stop-Process -Force
 
-    $extPath = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Extensions"
+    Start-Sleep 1
+
+    $basePath = "$env:LOCALAPPDATA\Microsoft\Edge\User Data"
+    $extPath = "$basePath\Default\Extensions"
 
     if (!(Test-Path $extPath)) {
         Write-Host "Extensions folder not found!" -ForegroundColor Red
@@ -24,14 +27,11 @@ function Remove-EdgeExtension {
         return
     }
 
-    # ===== LIST EXTENSIONS =====
+    # ===== LIST =====
     $map = @{}
     $i = 1
 
     Write-Host ""
-    Write-Host "Installed Extensions:" -ForegroundColor Green
-    Write-Host "----------------------"
-
     foreach ($ext in $extensions) {
         Write-Host "[$i] $($ext.Name)"
         $map[$i] = $ext.Name
@@ -40,71 +40,77 @@ function Remove-EdgeExtension {
 
     # ===== SELECT =====
     Write-Host ""
-    $choice = Read-Host "Select extension number to REMOVE"
+    $choice = Read-Host "Select extension number"
 
     if (-not ($choice -as [int]) -or -not $map.ContainsKey([int]$choice)) {
-        Write-Host "Invalid selection!" -ForegroundColor Red
+        Write-Host "Invalid!" -ForegroundColor Red
         return
     }
 
     $extID = $map[[int]$choice]
 
-    Write-Host ""
-    Write-Host "Removing extension: $extID ..." -ForegroundColor Yellow
+    Write-Host "Removing $extID ..." -ForegroundColor Yellow
 
-    $basePath = "$env:LOCALAPPDATA\Microsoft\Edge\User Data"
-
-    # ===== CLEAN ALL PROFILES =====
+    # ===== CLEAN ALL PROFILE =====
     Get-ChildItem $basePath -Directory | ForEach-Object {
 
         $profile = $_.FullName
 
-        # 1. Extension files
+        # 1. Remove extension folder
         Remove-Item "$profile\Extensions\$extID" -Recurse -Force -ErrorAction SilentlyContinue
 
-        # 2. Local settings
+        # 2. Remove local settings
         Remove-Item "$profile\Local Extension Settings\$extID" -Recurse -Force -ErrorAction SilentlyContinue
 
-        # 3. IndexedDB
-        if (Test-Path "$profile\IndexedDB") {
-            Get-ChildItem "$profile\IndexedDB" -ErrorAction SilentlyContinue | Where-Object {
-                $_.Name -like "*$extID*"
-            } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        # 3. Remove IndexedDB
+        Remove-Item "$profile\IndexedDB\*$extID*" -Recurse -Force -ErrorAction SilentlyContinue
 
-        # 4. Service Worker
-        if (Test-Path "$profile\Service Worker") {
-            Get-ChildItem "$profile\Service Worker" -Recurse -ErrorAction SilentlyContinue | Where-Object {
-                $_.FullName -like "*$extID*"
-            } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
-        }
+        # 4. Remove Service Worker
+        Remove-Item "$profile\Service Worker\*\*$extID*" -Recurse -Force -ErrorAction SilentlyContinue
 
-        # 5. Preferences
-        $pref = "$profile\Preferences"
-        if (Test-Path $pref) {
+        # ===== FIX QUAN TRỌNG: JSON CLEAN =====
+
+        $prefFile = "$profile\Preferences"
+
+        if (Test-Path $prefFile) {
             try {
-                (Get-Content $pref -Raw) -replace $extID, "" | Set-Content $pref -Encoding UTF8
-            } catch {}
+                $json = Get-Content $prefFile -Raw | ConvertFrom-Json
+
+                if ($json.extensions.settings.$extID) {
+                    $json.extensions.settings.PSObject.Properties.Remove($extID)
+                }
+
+                $json | ConvertTo-Json -Depth 100 | Set-Content $prefFile -Encoding UTF8
+
+                Write-Host "Fixed Preferences: $($_.Name)" -ForegroundColor Green
+            }
+            catch {
+                Write-Host "Failed JSON fix: $($_.Name)" -ForegroundColor Yellow
+            }
         }
 
-        # 6. Secure Preferences
+        # Secure Preferences (optional)
         $spref = "$profile\Secure Preferences"
         if (Test-Path $spref) {
             try {
-                (Get-Content $spref -Raw) -replace $extID, "" | Set-Content $spref -Encoding UTF8
-            } catch {}
+                $json = Get-Content $spref -Raw | ConvertFrom-Json
+
+                if ($json.extensions.settings.$extID) {
+                    $json.extensions.settings.PSObject.Properties.Remove($extID)
+                }
+
+                $json | ConvertTo-Json -Depth 100 | Set-Content $spref -Encoding UTF8
+            }
+            catch {}
         }
 
-        Write-Host "Cleaned profile: $($_.Name)" -ForegroundColor Green
     }
 
     Write-Host ""
-    Write-Host "DONE - Extension removed completely!" -ForegroundColor Cyan
+    Write-Host "DONE! Extension removed fully." -ForegroundColor Cyan
 
-    # Restart Edge
     Start-Sleep 1
     Start-Process msedge.exe
 }
 
-# ===== RUN =====
 Remove-EdgeExtension
