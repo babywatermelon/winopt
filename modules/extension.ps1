@@ -1,5 +1,5 @@
 # ==========================================
-# WINOPT - EXTENSION MANAGER (STABLE)
+# WINOPT - EXTENSION MANAGER (SELECT MODE)
 # ==========================================
 
 # ===== MENU =====
@@ -13,17 +13,14 @@ function Extension-Menu {
         Write-Host "==============================" -ForegroundColor Cyan
 
         Write-Host ""
-        Write-Host "[1] Remove Edge Extension (FULL CLEAN)"
+        Write-Host "[1] Remove Edge Extension (Select)"
         Write-Host "[0] Back"
         Write-Host ""
 
         $choice = Read-Host "Select option"
 
         switch ($choice) {
-            "1" {
-                $id = Read-Host "Enter Extension ID"
-                Remove-EdgeExtensionFull $id
-            }
+            "1" { Remove-EdgeExtension_Select }
             "0" { return }
             default { Write-Host "Invalid option!" -ForegroundColor Red }
         }
@@ -36,6 +33,60 @@ function Extension-Menu {
 # ===== STOP EDGE =====
 function Stop-Edge {
     taskkill /f /im msedge.exe 2>$null
+}
+
+# ===== LIST EXTENSIONS =====
+function List-EdgeExtensions {
+
+    $path = "$env:LOCALAPPDATA\Microsoft\Edge\User Data\Default\Extensions"
+
+    if (!(Test-Path $path)) {
+        Write-Host "No extensions folder found!" -ForegroundColor Red
+        return $null
+    }
+
+    $list = Get-ChildItem $path -Directory
+
+    if ($list.Count -eq 0) {
+        Write-Host "No extensions installed!" -ForegroundColor Yellow
+        return $null
+    }
+
+    Write-Host ""
+    Write-Host "Installed Extensions:" -ForegroundColor Cyan
+    Write-Host "----------------------"
+
+    $i = 1
+    $map = @{}
+
+    foreach ($ext in $list) {
+        Write-Host "[$i] $($ext.Name)"
+        $map[$i] = $ext.Name
+        $i++
+    }
+
+    return $map
+}
+
+# ===== SELECT + REMOVE =====
+function Remove-EdgeExtension_Select {
+
+    Stop-Edge
+
+    $map = List-EdgeExtensions
+    if ($map -eq $null) { return }
+
+    Write-Host ""
+    $choice = Read-Host "Select extension number"
+
+    if (-not ($choice -as [int]) -or -not $map.ContainsKey([int]$choice)) {
+        Write-Host "Invalid selection!" -ForegroundColor Red
+        return
+    }
+
+    $extID = $map[[int]$choice]
+
+    Remove-EdgeExtensionFull $extID
 }
 
 # ===== FULL CLEAN FUNCTION =====
@@ -54,8 +105,6 @@ function Remove-EdgeExtensionFull {
         Write-Host "Edge not found!" -ForegroundColor Red
         return
     }
-
-    Stop-Edge
 
     Get-ChildItem $basePath -Directory | ForEach-Object {
 
