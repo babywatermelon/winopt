@@ -24,6 +24,7 @@ $moduleList = @(
     "tools",
     "install"    
     "uninstall"
+    "extention"
 )
 
 foreach ($m in $moduleList) {
