@@ -307,11 +307,13 @@ while ($true) {
             "67" { Uninstall-Office }
 
             "99" { Show-Readme }
-
             "0" {
-                Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
-                Start-Sleep 1
-                return
+                $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
+                if ($confirm -eq "Y") {
+                    Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
+                    Start-Sleep 1
+                    return
+                }
             }
 
             default {
