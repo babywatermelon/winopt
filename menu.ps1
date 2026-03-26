@@ -310,7 +310,7 @@ while ($true) {
             "66" { Uninstall-HWMonitor }
             "67" { Uninstall-Office }
 
-            "70" { Extension-Menu }
+            "70" { Remove-EdgeExtension }
             
             "99" { Show-Readme }
             "0" {
