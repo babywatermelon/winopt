@@ -1,5 +1,6 @@
 # ===== EXTENSION TOOL MODULE =====
 
+# ===== STOP BROWSERS =====
 function Stop-Browsers {
     taskkill /f /im chrome.exe 2>$null
     taskkill /f /im msedge.exe 2>$null
@@ -72,11 +73,66 @@ function Remove-FirefoxExtensions {
     }
 }
 
-# ===== REMOVE ALL =====
+# ===== REMOVE ALL EXTENSIONS =====
 function Remove-AllExtensions {
     Remove-ChromeExtensions
     Remove-EdgeExtensions
     Remove-FirefoxExtensions
+}
+
+# ===== REMOVE EDGE EXTENSION BY ID (DEEP CLEAN) =====
+function Remove-EdgeExtensionByID {
+
+    param($extID)
+
+    if (-not $extID) {
+        Write-Host "Invalid Extension ID!" -ForegroundColor Red
+        return
+    }
+
+    $basePath = "$env:LOCALAPPDATA\Microsoft\Edge\User Data"
+
+    if (-not (Test-Path $basePath)) {
+        Write-Host "Edge not found!" -ForegroundColor Red
+        return
+    }
+
+    Stop-Browsers
+
+    Get-ChildItem $basePath -Directory | ForEach-Object {
+
+        $profile = $_.FullName
+
+        # 1. Extensions
+        $extPath = Join-Path $profile "Extensions\$extID"
+        if (Test-Path $extPath) {
+            Remove-Item $extPath -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        # 2. Local Extension Settings
+        $localExt = Join-Path $profile "Local Extension Settings\$extID"
+        if (Test-Path $localExt) {
+            Remove-Item $localExt -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        # 3. IndexedDB
+        $indexed = Join-Path $profile "IndexedDB"
+        if (Test-Path $indexed) {
+            Get-ChildItem $indexed -Directory | Where-Object {
+                $_.Name -like "*$extID*"
+            } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        # 4. Service Worker cache
+        $sw = Join-Path $profile "Service Worker"
+        if (Test-Path $sw) {
+            Get-ChildItem $sw -Recurse -ErrorAction SilentlyContinue | Where-Object {
+                $_.FullName -like "*$extID*"
+            } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+        }
+
+        Write-Host "Removed Extension + Cache: $extID ($($_.Name))" -ForegroundColor Green
+    }
 }
 
 # ===== EXTENSION MENU =====
@@ -92,6 +148,7 @@ function Extension-Menu {
     Write-Host "[2] Remove Edge Extensions"
     Write-Host "[3] Remove Firefox Extensions"
     Write-Host "[4] Remove ALL Extensions"
+    Write-Host "[5] Remove Edge Extension (By ID) 🔥"
     Write-Host "[0] Back"
     Write-Host ""
 
@@ -102,6 +159,10 @@ function Extension-Menu {
         "2" { Remove-EdgeExtensions }
         "3" { Remove-FirefoxExtensions }
         "4" { Remove-AllExtensions }
+        "5" { 
+            $id = Read-Host "Enter Extension ID"
+            Remove-EdgeExtensionByID $id
+        }
         "0" { return }
         default { Write-Host "Invalid option!" -ForegroundColor Red }
     }
@@ -110,4 +171,3 @@ function Extension-Menu {
     Read-Host "Press Enter to continue"
     Extension-Menu
 }
-
