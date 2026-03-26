@@ -1,6 +1,40 @@
-# ===== EXTENSION TOOL MODULE =====
+function Extension-Menu {
 
-# ===== STOP BROWSERS =====
+    while ($true) {
+
+        Clear-Host
+        Write-Host "==============================" -ForegroundColor Cyan
+        Write-Host "      EXTENSION MANAGER       " -ForegroundColor Cyan
+        Write-Host "==============================" -ForegroundColor Cyan
+
+        Write-Host ""
+        Write-Host "[1] Remove Chrome Extensions"
+        Write-Host "[2] Remove Edge Extensions"
+        Write-Host "[3] Remove Firefox Extensions"
+        Write-Host "[4] Remove ALL Extensions"
+        Write-Host "[5] Remove Edge Extension (By ID) 🔥"
+        Write-Host "[0] Back"
+        Write-Host ""
+
+        $choice = Read-Host "Select option"
+
+        switch ($choice) {
+            "1" { Remove-ChromeExtensions }
+            "2" { Remove-EdgeExtensions }
+            "3" { Remove-FirefoxExtensions }
+            "4" { Remove-AllExtensions }
+            "5" { 
+                $id = Read-Host "Enter Extension ID"
+                Remove-EdgeExtensionByID $id
+            }
+            "0" { return }
+            default { Write-Host "Invalid option!" -ForegroundColor Red }
+        }
+
+        Write-Host ""
+        Read-Host "Press Enter to continue"
+    }
+}
 function Stop-Browsers {
     taskkill /f /im chrome.exe 2>$null
     taskkill /f /im msedge.exe 2>$null
@@ -136,40 +170,4 @@ function Remove-EdgeExtensionByID {
 }
 
 # ===== EXTENSION MENU =====
-function Extension-Menu {
 
-    while ($true) {
-
-        Clear-Host
-        Write-Host "==============================" -ForegroundColor Cyan
-        Write-Host "      EXTENSION MANAGER       " -ForegroundColor Cyan
-        Write-Host "==============================" -ForegroundColor Cyan
-
-        Write-Host ""
-        Write-Host "[1] Remove Chrome Extensions"
-        Write-Host "[2] Remove Edge Extensions"
-        Write-Host "[3] Remove Firefox Extensions"
-        Write-Host "[4] Remove ALL Extensions"
-        Write-Host "[5] Remove Edge Extension (By ID) 🔥"
-        Write-Host "[0] Back"
-        Write-Host ""
-
-        $choice = Read-Host "Select option"
-
-        switch ($choice) {
-            "1" { Remove-ChromeExtensions }
-            "2" { Remove-EdgeExtensions }
-            "3" { Remove-FirefoxExtensions }
-            "4" { Remove-AllExtensions }
-            "5" { 
-                $id = Read-Host "Enter Extension ID"
-                Remove-EdgeExtensionByID $id
-            }
-            "0" { return }
-            default { Write-Host "Invalid option!" -ForegroundColor Red }
-        }
-
-        Write-Host ""
-        Read-Host "Press Enter to continue"
-    }
-}
