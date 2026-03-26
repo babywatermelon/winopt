@@ -23,7 +23,7 @@ $moduleList = @(
     "repair",
     "tools",
     "install"    
-    "uninstall"
+    "uninstall",
     "extention"
 )
 
