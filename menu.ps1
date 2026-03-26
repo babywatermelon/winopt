@@ -311,7 +311,7 @@ while ($true) {
             "0" {
                 Write-Host "Exiting WinOpt..." -ForegroundColor Yellow
                 Start-Sleep 1
-                break
+                return
             }
 
             default {
