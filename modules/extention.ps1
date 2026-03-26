@@ -79,3 +79,35 @@ function Remove-AllExtensions {
     Remove-FirefoxExtensions
 }
 
+# ===== EXTENSION MENU =====
+function Extension-Menu {
+
+    Clear-Host
+    Write-Host "==============================" -ForegroundColor Cyan
+    Write-Host "      EXTENSION MANAGER       " -ForegroundColor Cyan
+    Write-Host "==============================" -ForegroundColor Cyan
+
+    Write-Host ""
+    Write-Host "[1] Remove Chrome Extensions"
+    Write-Host "[2] Remove Edge Extensions"
+    Write-Host "[3] Remove Firefox Extensions"
+    Write-Host "[4] Remove ALL Extensions"
+    Write-Host "[0] Back"
+    Write-Host ""
+
+    $choice = Read-Host "Select option"
+
+    switch ($choice) {
+        "1" { Remove-ChromeExtensions }
+        "2" { Remove-EdgeExtensions }
+        "3" { Remove-FirefoxExtensions }
+        "4" { Remove-AllExtensions }
+        "0" { return }
+        default { Write-Host "Invalid option!" -ForegroundColor Red }
+    }
+
+    Write-Host ""
+    Read-Host "Press Enter to continue"
+    Extension-Menu
+}
+
