@@ -176,8 +176,6 @@ CAC CHUC NANG CHINH
 47. HWMonitor       67. Remove HWMonitor
 48. Office 365      68. Remove Office
 
-[ BROWSER TOOLS ]
-71. Extension Manager
 
 ===========================================================
 LUU Y
