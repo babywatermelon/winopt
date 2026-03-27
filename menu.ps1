@@ -3,7 +3,6 @@ $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 # ===== LOAD MODULES =====
 $base = "$env:TEMP\winopt"
 $modulePath = Join-Path $base "modules"
-
 if (Test-Path $modulePath) {
     $modules = Get-ChildItem "$modulePath\*.ps1" -ErrorAction SilentlyContinue
     foreach ($module in $modules) {
@@ -72,11 +71,11 @@ function Show-Menu {
 
     # ================== SYSTEM CLEANUP & REPAIR TOOLS ==================
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
-    Draw-Line "[1] Clean Temp"           "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
-    Draw-Line "[2] Clear Prefetch"       "[12] DISM Repair"               $menuWidth $leftPadding
-    Draw-Line "[3] Clean Update Cache"   "[13] Full Windows Repair"       $menuWidth $leftPadding
-    Draw-Line "[4] Clear Recycle Bin"    ""                               $menuWidth $leftPadding
-    Draw-Line "[5] Clean Logs"           ""                               $menuWidth $leftPadding
+    Draw-Line "[1]  Clean Temp"           "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
+    Draw-Line "[2]  Clear Prefetch"       "[12] DISM Repair"               $menuWidth $leftPadding
+    Draw-Line "[3]  Clean Update Cache"   "[13] Full Windows Repair"       $menuWidth $leftPadding
+    Draw-Line "[4]  Clear Recycle Bin"    "[14] Create Restore Point"      $menuWidth $leftPadding
+    Draw-Line "[5]  Clean Logs"           ""                               $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # ================== NETWORK TOOLS & WINDOWS QUICK TOOLS ==================
@@ -104,7 +103,6 @@ function Show-Menu {
     Draw-Line "[48] Office 365"           "[68] Remove Office"             $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-
     # Help & Exit
     Draw-Line "[99] README / Help"        ""                               $menuWidth $leftPadding
     Draw-Line "[0]  Exit"                 ""                               $menuWidth $leftPadding
@@ -113,7 +111,7 @@ function Show-Menu {
     Write-Host ""
 }
 
-# ===== README (TIENG VIET KHONG DAU) =====
+# ===== README (TIENG VIET KHONG DAU) - ĐÃ CẬP NHẬT ==================
 function Show-Readme {
     $readme = @"
 ===========================================================
@@ -148,6 +146,7 @@ CAC CHUC NANG CHINH
 11. Repair Windows (SFC)
 12. DISM Repair
 13. Full Windows Repair
+14. Create Restore Point
 
 [ NETWORK TOOLS ]
 21. Flush DNS
@@ -167,15 +166,14 @@ CAC CHUC NANG CHINH
 39. System Info GUI
 
 [ INSTALL TOOLS ]
-41. Chrome          61. Remove Chrome
-42. Edge            62. Remove Edge
-43. Firefox         63. Remove Firefox
-44. CPU-Z           64. Remove CPU-Z
-45. GPU-Z           65. Remove GPU-Z
+41. Chrome  61. Remove Chrome
+42. Edge    62. Remove Edge
+43. Firefox 63. Remove Firefox
+44. CPU-Z   64. Remove CPU-Z
+45. GPU-Z   65. Remove GPU-Z
 46. CrystalDiskInfo 66. Remove CrystalDiskInfo
 47. HWMonitor       67. Remove HWMonitor
 48. Office 365      68. Remove Office
-
 
 ===========================================================
 LUU Y
@@ -213,6 +211,7 @@ while ($true) {
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
+            "14" { Create-RestorePoint }     # <--- ĐÃ THÊM
 
             # Network Tools
             "21" { Flush-DNS }
@@ -250,7 +249,6 @@ while ($true) {
             "66" { Uninstall-CrystalDiskInfo }
             "67" { Uninstall-HWMonitor }
             "68" { Uninstall-Office }
-
 
             # Help & Exit
             "99" { Show-Readme }
