@@ -75,7 +75,7 @@ function Show-Menu {
     Draw-Line "[2] Clear Prefetch"       "[12] DISM Repair"               $menuWidth $leftPadding
     Draw-Line "[3] Clean Update Cache"   "[13] Full Windows Repair"       $menuWidth $leftPadding
     Draw-Line "[4] Clear Recycle Bin"    "[14] Create Restore Point"      $menuWidth $leftPadding
-    Draw-Line "[5] Clean Logs"             
+    Draw-Line "[5] Clean Logs"                                            $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # ================== NETWORK TOOLS & WINDOWS QUICK TOOLS ==================
