@@ -211,7 +211,8 @@ while ($true) {
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
-            "14" { Create-RestorePoint }     # <--- ĐÃ THÊM
+            "14" { Create-RestorePoint }
+            "15" { Run-SystemRestore }    
 
             # Network Tools
             "21" { Flush-DNS }
