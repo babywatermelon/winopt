@@ -4,22 +4,44 @@
 function Clean-RAMCache {
     Write-Host ""
     Write-Host "=== DON DEP RAM CACHE (STANDBY LIST) ===" -ForegroundColor Cyan
-    Write-Host "Dang giai phong bo nho dem he thong..." -ForegroundColor Yellow
+    Write-Host "Dang kich hoat dac quyen he thong..." -ForegroundColor Yellow
 
-    # Dinh nghia API de can thiep vao he thong
     $Code = @"
     using System;
     using System.Runtime.InteropServices;
+    using System.Security.Principal;
 
     public class RAMCleaner {
-        [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool PrivilegeCheck(IntPtr TokenHandle, ref PRIVILEGE_SET RequiredPrivileges, out bool pfResult);
-
         [DllImport("ntdll.dll")]
         public static extern UInt32 NtSetSystemInformation(int InfoClass, IntPtr Info, int Length);
 
+        [StructLayout(LayoutKind.Sequential, Pack = 1)]
+        public struct TOKEN_PRIVILEGES {
+            public int PrivilegeCount;
+            public long Luid;
+            public int Attributes;
+        }
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool OpenProcessToken(IntPtr ProcessHandle, uint DesiredAccess, out IntPtr TokenHandle);
+
+        [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out long lpLuid);
+
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool AdjustTokenPrivileges(IntPtr TokenHandle, bool DisableAllPrivileges, ref TOKEN_PRIVILEGES NewState, int BufferLength, IntPtr PreviousState, IntPtr ReturnLength);
+
         public static void EmptyCache() {
-            // 4 la ma lenh de don sach SystemMemoryList (Standby List)
+            // Cap quyen SE_PROFILE_SINGLE_PROCESS_NAME hoac SE_INCREASE_QUOTA_NAME
+            IntPtr hToken;
+            TOKEN_PRIVILEGES tkp = new TOKEN_PRIVILEGES();
+            OpenProcessToken(System.Diagnostics.Process.GetCurrentProcess().Handle, 0x0020 | 0x0008, out hToken);
+            tkp.PrivilegeCount = 1;
+            LookupPrivilegeValue(null, "SeProfileSingleProcessPrivilege", out tkp.Luid);
+            tkp.Attributes = 0x00000002;
+            AdjustTokenPrivileges(hToken, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero);
+
+            // Lenh giai phong Standby List
             int SystemMemoryListPurge = 4;
             int size = Marshal.SizeOf(SystemMemoryListPurge);
             IntPtr pSize = Marshal.AllocHGlobal(size);
@@ -32,19 +54,20 @@ function Clean-RAMCache {
 "@
 
     try {
-        # Load code C# vao PowerShell
-        Add-Type -TypeDefinition $Code -ErrorAction SilentlyContinue
+        # Neu class da ton tai thi khong can Add-Type lai de tranh loi
+        if (-not ([System.Management.Automation.PSTypeName]"RAMCleaner").Type) {
+            Add-Type -TypeDefinition $Code -ErrorAction SilentlyContinue
+        }
         
-        # Thuc thi don dep
         [RAMCleaner]::EmptyCache()
-
-        Write-Host "THANH CONG: Da xoa sach Standby List." -ForegroundColor Green
-        Write-Host "Hay kiem tra lai muc 'Cached' trong Task Manager." -ForegroundColor White
+        Write-Host "THANH CONG: Da giai phong Standby List." -ForegroundColor Green
     }
     catch {
-        Write-Host "Loi: Khong the don dep Cache. Hay dam bao ban chay quyen Admin." -ForegroundColor Red
+        Write-Host "Loi: Khong the can thiep vao Kernel." -ForegroundColor Red
+        Write-Host "Goi y: Hay kiem tra xem Antivirus co dang chan script khong." -ForegroundColor Gray
     }
 }
+
 function Clean-SystemRestoreShadows {
     Write-Host ""
     Write-Host "=== XOA TOAN BO DU LIEU SYSTEM RESTORE ===" -ForegroundColor Red
@@ -62,6 +85,7 @@ function Clean-SystemRestoreShadows {
         }
     }
 }
+
 
 function Clean-Temp {
 
