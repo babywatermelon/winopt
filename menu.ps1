@@ -71,11 +71,11 @@ function Show-Menu {
 
     # ================== SYSTEM CLEANUP & REPAIR TOOLS ==================
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
-    Draw-Line "[1]  Clean Temp"           "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
-    Draw-Line "[2]  Clear Prefetch"       "[12] DISM Repair"               $menuWidth $leftPadding
-    Draw-Line "[3]  Clean Update Cache"   "[13] Full Windows Repair"       $menuWidth $leftPadding
-    Draw-Line "[4]  Clear Recycle Bin"    "[14] Create Restore Point"      $menuWidth $leftPadding
-    Draw-Line "[5]  Clean Logs"           ""                               $menuWidth $leftPadding
+    Draw-Line "[1] Clean Temp"           "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
+    Draw-Line "[2] Clear Prefetch"       "[12] DISM Repair"               $menuWidth $leftPadding
+    Draw-Line "[3] Clean Update Cache"   "[13] Full Windows Repair"       $menuWidth $leftPadding
+    Draw-Line "[4] Clear Recycle Bin"    "[14] Create Restore Point"      $menuWidth $leftPadding
+    Draw-Line "[5] Clean Logs"           "[15] Run System Restore"        $menuWidth $leftPadding   
     Draw-Line "" "" $menuWidth $leftPadding
 
     # ================== NETWORK TOOLS & WINDOWS QUICK TOOLS ==================
