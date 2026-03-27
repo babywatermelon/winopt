@@ -63,6 +63,55 @@ function Create-RestorePoint {
     }
 }
 
+# ===============================
+# CHUC NANG KHOI PHUC HE THONG
+function Restore-ComputerPoint {
+    Write-Host ""
+    Write-Host "=== KHOI PHUC HE THONG (SYSTEM RESTORE) ===" -ForegroundColor Cyan
+    Write-Host ""
+
+    # 1. Kiem tra quyen Admin
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "Loi: Vui long chay WinOpt voi quyen Administrator!" -ForegroundColor Red
+        return
+    }
+
+    # 2. Lay danh sach cac diem Restore hien co
+    Write-Host "Dang tai danh sach cac diem khoi phuc..." -ForegroundColor Yellow
+    $restorePoints = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
+
+    if (-not $restorePoints) {
+        Write-Host "Khong tim thay diem khoi phuc (Restore Point) nao trong he thong!" -ForegroundColor Red
+        Write-Host "Goi y: Ban hay dung chuc nang [14] de tao mot diem truoc." -ForegroundColor Gray
+        return
+    }
+
+    # Hiển thị điểm mới nhất cho người dùng xem
+    $latest = $restorePoints | Sort-Object CreationTime -Descending | Select-Object -First 1
+    Write-Host "Diem khoi phuc gan nhat duoc tim thay:" -ForegroundColor White
+    Write-Host " - Ten: $($latest.Description)" -ForegroundColor Green
+    Write-Host " - Ngay tao: $($latest.CreationTime)" -ForegroundColor Green
+    Write-Host " - ID: $($latest.SequenceNumber)" -ForegroundColor Green
+    Write-Host ""
+
+    # 3. Xac nhan khoi phuc
+    Write-Host "Luu y: Khi bat dau, Windows se mo trinh khoi phuc." -ForegroundColor Yellow
+    $confirm = Read-Host "Ban co muon tien hanh khoi phuc khong? (Y/N)"
+    
+    if ($confirm -eq "Y" -or $confirm -eq "y") {
+        Write-Host "Dang khoi chay System Restore Wizard..." -ForegroundColor Cyan
+        
+        # Goi trinh Restore cua Windows (rstrui.exe)
+        # Lenh nay se mo cua so Restore va tu chon diem gan nhat neu co the
+        Start-Process "rstrui.exe" -ArgumentList "/latest" -Wait
+        
+        Write-Host ""
+        Write-Host "Da gui yeu cau khoi phuc. Vui long lam theo huong dan tren man hinh Windows." -ForegroundColor White
+    } else {
+        Write-Host "Da huy thao tac khoi phuc." -ForegroundColor Yellow
+    }
+}
+
 # -------------------------------
 function Repair-DISM {
     Write-Host ""
