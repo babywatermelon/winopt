@@ -3,37 +3,67 @@
 # ===============================
 
 # -------------------------------
+# -------------------------------
 function Create-RestorePoint {
     Write-Host ""
-    Write-Host "=== CREATE SYSTEM RESTORE POINT ===" -ForegroundColor Cyan
+    Write-Host "=== TAO SYSTEM RESTORE POINT ===" -ForegroundColor Cyan
     Write-Host ""
 
-    # Xác nhận mạnh từ người dùng
+    # Kiểm tra quyền Admin
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "Loi: Vui long chay WinOpt voi quyen Administrator!" -ForegroundColor Red
+        return
+    }
+
+    # Xac nhan tu nguoi dung
     $confirm = Read-Host "Ban co chac chan muon tao System Restore Point khong? (Y/N)"
     if ($confirm -ne "Y" -and $confirm -ne "y") {
         Write-Host "Da huy tao Restore Point." -ForegroundColor Yellow
         return
     }
 
-    Write-Host "Dang tao System Restore Point..." -ForegroundColor Yellow
-    Write-Host "Vui long doi trong vai giay..." -ForegroundColor DarkGray
+    Write-Host "Dang kiem tra dich vu System Restore..." -ForegroundColor Yellow
 
     try {
-        # Tạo restore point với mô tả rõ ràng
-        $description = "WinOpt Restore Point - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+        # Kiem tra va bat dich vu System Restore neu can
+        $service = Get-Service -Name "srpv" -ErrorAction SilentlyContinue
         
+        if ($service -and $service.Status -ne "Running") {
+            Write-Host "Dich vu System Restore dang bi tat. Dang bat..." -ForegroundColor Yellow
+            Set-Service -Name "srpv" -StartupType Automatic -ErrorAction Stop
+            Start-Service -Name "srpv" -ErrorAction Stop
+            Write-Host "Da bat dich vu System Restore thanh cong." -ForegroundColor Green
+        }
+
+        # Kiem tra va bat System Protection tren o C:
+        $protection = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
+        if (-not $protection) {
+            Write-Host "Dang bat System Protection tren o dia C: ..." -ForegroundColor Yellow
+            Enable-ComputerRestore -Drive "C:\" -ErrorAction Stop
+            Write-Host "Da bat System Protection tren C: thanh cong." -ForegroundColor Green
+        }
+
+        # Tao Restore Point
+        Write-Host ""
+        Write-Host "Dang tao System Restore Point..." -ForegroundColor Yellow
+        $description = "WinOpt Restore Point - $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
+
         Checkpoint-Computer -Description $description -RestorePointType "MODIFY_SETTINGS" -ErrorAction Stop
 
         Write-Host ""
         Write-Host "TAO RESTORE POINT THANH CONG!" -ForegroundColor Green
         Write-Host "Mo ta: $description" -ForegroundColor White
-        Write-Host "Ban co the su dung no de khoi phuc he thong neu can." -ForegroundColor Gray
+        Write-Host "Ban co the dung no de khoi phuc he thong neu can thiet." -ForegroundColor Gray
     }
     catch {
         Write-Host ""
         Write-Host "Loi khi tao Restore Point:" -ForegroundColor Red
         Write-Host $_.Exception.Message -ForegroundColor Red
-        Write-Host "Luu y: System Restore phai duoc bat tren o dia he thong (thuong la C:)." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "Goi y khac phuc:" -ForegroundColor Yellow
+        Write-Host "- Chay tool voi quyen Administrator" -ForegroundColor Gray
+        Write-Host "- Mo System Protection thu cong: Tim 'Create a restore point' trong Search" -ForegroundColor Gray
+        Write-Host "- Dam bao o C: co duong luong trong (it nhat 5-10GB)" -ForegroundColor Gray
     }
 }
 
