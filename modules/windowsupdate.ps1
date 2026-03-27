@@ -42,20 +42,8 @@ function Disable-WindowsUpdate {
 function Enable-WindowsUpdate {
     Write-Host "`n--- BAT LAI Windows Update (WUB Style - Reset toan bo) ---" -ForegroundColor Cyan
 
-    # 1. Lấy quyền Admin trên Registry (quan trọng nhất - fix Access Denied)
-    Write-Host "Dang lay quyen tren Registry..." -ForegroundColor Yellow
-    $services = @("wuauserv", "WaaSMedicSvc", "UsoSvc")
-    foreach ($svc in $services) {
-        $regPath = "HKLM:\SYSTEM\CurrentControlSet\Services\$svc"
-        if (Test-Path $regPath) {
-            # Lấy ownership
-            takeown /F "HKLM:\SYSTEM\CurrentControlSet\Services\$svc" /A /R /D Y | Out-Null
-            icacls "HKLM:\SYSTEM\CurrentControlSet\Services\$svc" /grant Administrators:F /T /C | Out-Null
-            Write-Host "Da lay quyen cho $svc" -ForegroundColor Gray
-        }
-    }
-
-    # 2. Reset Registry Policy
+    # 1. Reset Registry Policy (phần này ổn)
+    Write-Host "Dang xoa policy chan Windows Update..." -ForegroundColor Yellow
     $regPaths = @(
         "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
         "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
@@ -66,29 +54,41 @@ function Enable-WindowsUpdate {
         }
     }
 
-    # 3. Set Startup Type = Automatic (giống WUB)
-    $allServices = @("wuauserv", "bits", "cryptSvc", "msiserver", "UsoSvc", "WaaSMedicSvc")
-    foreach ($svc in $allServices) {
-        sc config $svc start= auto | Out-Null
-        Write-Host "Set $svc = Automatic" -ForegroundColor Gray
+    # Xóa Pause Updates
+    $uxPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"
+    if (Test-Path $uxPath) {
+        Remove-ItemProperty -Path $uxPath -Name "PauseUpdatesExpiryTime" -ErrorAction SilentlyContinue
     }
 
-    # 4. Reset Windows Update Cache (rất quan trọng)
-    Write-Host "Reset cache Windows Update..." -ForegroundColor Yellow
+    # 2. Set Startup Type = Automatic (sửa lỗi sc config)
+    Write-Host "Dang dat cac service ve Automatic..." -ForegroundColor Yellow
+    $allServices = @("wuauserv", "bits", "cryptSvc", "msiserver", "UsoSvc", "WaaSMedicSvc")
+    foreach ($svc in $allServices) {
+        try {
+            sc.exe config $svc start= auto | Out-Null
+            Write-Host "   Set $svc = Automatic" -ForegroundColor Gray
+        }
+        catch {
+            Write-Host "   Khong the set $svc" -ForegroundColor Yellow
+        }
+    }
+
+    # 3. Reset Windows Update Cache (rất quan trọng)
+    Write-Host "Dang reset cache Windows Update..." -ForegroundColor Yellow
     Stop-Service wuauserv, bits, cryptSvc, msiserver -Force -ErrorAction SilentlyContinue
 
     Remove-Item "$env:windir\SoftwareDistribution\*" -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$env:windir\System32\catroot2\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-    # 5. Start services
+    # 4. Start services
     Start-Service bits, cryptSvc, msiserver -ErrorAction SilentlyContinue
     Start-Service wuauserv -ErrorAction SilentlyContinue
 
-    # 6. Enable Scheduled Tasks
+    # 5. Enable Scheduled Tasks
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\WindowsUpdate\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
 
-    Write-Host "`nTHANH CONG: Da bat lai Windows Update theo cach cua WUB!" -ForegroundColor Green
+    Write-Host "`nTHANH CONG: Da reset va bat lai Windows Update!" -ForegroundColor Green
     Write-Host "Vui long RESTART MAY ngay bay gio." -ForegroundColor Magenta
-    Write-Host "Sau restart, mo Settings > Windows Update > Check for updates 1 lan." -ForegroundColor Cyan
+    Write-Host "Sau restart, mo Settings > Windows Update va nhan Check for updates." -ForegroundColor Cyan
 }
