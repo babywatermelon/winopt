@@ -3,34 +3,46 @@
 # ===============================
 function Clean-RAMCache {
     Write-Host ""
-    Write-Host "=== DONG BO VA DON DEP BO NHO RAM ===" -ForegroundColor Cyan
-    Write-Host "Dang giai phong Standby List va Working Sets..." -ForegroundColor Yellow
+    Write-Host "=== DON DEP RAM CACHE (STANDBY LIST) ===" -ForegroundColor Cyan
+    Write-Host "Dang giai phong bo nho dem he thong..." -ForegroundColor Yellow
+
+    # Dinh nghia API de can thiep vao he thong
+    $Code = @"
+    using System;
+    using System.Runtime.InteropServices;
+
+    public class RAMCleaner {
+        [DllImport("advapi32.dll", SetLastError = true)]
+        public static extern bool PrivilegeCheck(IntPtr TokenHandle, ref PRIVILEGE_SET RequiredPrivileges, out bool pfResult);
+
+        [DllImport("ntdll.dll")]
+        public static extern UInt32 NtSetSystemInformation(int InfoClass, IntPtr Info, int Length);
+
+        public static void EmptyCache() {
+            // 4 la ma lenh de don sach SystemMemoryList (Standby List)
+            int SystemMemoryListPurge = 4;
+            int size = Marshal.SizeOf(SystemMemoryListPurge);
+            IntPtr pSize = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(SystemMemoryListPurge, pSize, false);
+            
+            NtSetSystemInformation(80, pSize, size);
+            Marshal.FreeHGlobal(pSize);
+        }
+    }
+"@
 
     try {
-        # 1. Thuc hien thu gom rac cua Garbage Collector (neu co the)
-        [System.GC]::Collect()
-        [System.GC]::WaitForPendingFinalizers()
+        # Load code C# vao PowerShell
+        Add-Type -TypeDefinition $Code -ErrorAction SilentlyContinue
+        
+        # Thuc thi don dep
+        [RAMCleaner]::EmptyCache()
 
-        # 2. Su dung EmptyWorkingSet tu psapi.dll (Cach nay rat an toan va hieu qua)
-        $ProcessItems = Get-Process | Where-Object { $_.WorkingSet64 -gt 1MB }
-        foreach ($Process in $ProcessItems) {
-            try {
-                $handle = $Process.Handle
-                # Lenh nay yeu cau Windows toi uu lai bo nho cua tung Process
-            } catch { continue }
-        }
-
-        # 3. Goi thong bao ket qua
-        $memAfter = Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory
-        $freeMemMB = [math]::Round($memAfter.FreePhysicalMemory / 1024, 2)
-
-        Write-Host ""
-        Write-Host "THANH CONG: Da toi uu lai bo nho RAM." -ForegroundColor Green
-        Write-Host "Bo nho vat ly hien dang trong: $freeMemMB MB" -ForegroundColor White
-        Write-Host "Luu y: Windows se tu dong nap lai Cache khi can thiet." -ForegroundColor Gray
+        Write-Host "THANH CONG: Da xoa sach Standby List." -ForegroundColor Green
+        Write-Host "Hay kiem tra lai muc 'Cached' trong Task Manager." -ForegroundColor White
     }
     catch {
-        Write-Host "Loi khi don dep RAM: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Loi: Khong the don dep Cache. Hay dam bao ban chay quyen Admin." -ForegroundColor Red
     }
 }
 function Clean-SystemRestoreShadows {
