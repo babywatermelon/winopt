@@ -1,20 +1,21 @@
 # ===============================
 # WINOPT CLEAN MODULE
 # ===============================
-function Clear-AllRestorePoints {
+function Clean-SystemRestoreShadows {
     Write-Host ""
-    Write-Host "=== XOA CAC BAN RESTORE CU DE GIAI PHONG O C: ===" -ForegroundColor Cyan
-    Write-Host "Luu y: Tat ca cac diem khoi phuc se bi xoa, chi giu lai ban moi nhat." -ForegroundColor Yellow
+    Write-Host "=== XOA TOAN BO DU LIEU SYSTEM RESTORE ===" -ForegroundColor Red
+    Write-Host "Canh bao: Sau khi xoa, ban se KHONG THE khoi phuc lai he thong!" -ForegroundColor Yellow
     
-    $confirm = Read-Host "Ban co chac chan muon tiep tuc? (Y/N)"
+    $confirm = Read-Host "Xac nhan xoa sach? (Y/N)"
     if ($confirm -eq "Y" -or $confirm -eq "y") {
-        Write-Host "Dang thuc hien don dep Restore Points..." -ForegroundColor Yellow
-        
-        # Chạy trình dọn dẹp hệ thống ở chế độ xóa Restore Points
-        # SageSet:65535 là một mã giả lập để kích hoạt dọn dẹp hệ thống
-        cleanmgr /sagerun:64
-        
-        Write-Host "Lenh da duoc gui. Windows dang xu ly ngam..." -ForegroundColor Green
+        try {
+            # Xóa các bản shadow copy (nơi lưu trữ Restore Point)
+            vssadmin delete shadows /for=C: /all /quiet
+            Write-Host "Da xoa toan bo cac diem khoi phuc tren o C:." -ForegroundColor Green
+        }
+        catch {
+            Write-Host "Loi: Khong the xoa du lieu. Co the dich vu VSS dang ban." -ForegroundColor Red
+        }
     }
 }
 
