@@ -63,6 +63,7 @@ function Create-RestorePoint {
     }
 }
 # -------------------------------
+# -------------------------------
 function Run-SystemRestore {
     Write-Host ""
     Write-Host "=== RUN SYSTEM RESTORE (KHÔI PHỤC HỆ THỐNG) ===" -ForegroundColor Red
@@ -76,37 +77,30 @@ function Run-SystemRestore {
     Write-Host "- File ca nhan (anh, tai lieu...) KHONG bi xoa" -ForegroundColor Gray
     Write-Host ""
 
-    Write-Host "!!! DAY LA CHUC NANG NGUY HIEM - CHI DUNG CHO NGUOI BIET RO HOI QUA !!!" -ForegroundColor Red
+    Write-Host "!!! DAY LA CHUC NANG RAT NGUY HIEM - CHI DUNG CHO IT SUPPORT HOAC NGUOI HIEM HIEM HOI QUA !!!" -ForegroundColor Red
     Write-Host ""
 
-    # Xac nhan muc 1
-    $confirm1 = Read-Host "Ban HIEM HIEM hieu rang may se khoi dong lai va he thong co the bi thay doi? (Y/N)"
+    $confirm1 = Read-Host "Ban HIEM HIEM hieu rang may se khoi dong lai va he thong co the bi thay doi lon? (Y/N)"
     if ($confirm1 -ne "Y" -and $confirm1 -ne "y") {
-        Write-Host "Da huy chuc nang System Restore." -ForegroundColor Green
+        Write-Host "Da huy." -ForegroundColor Green
         return
     }
 
-    # Xac nhan muc 2
-    $confirm2 = Read-Host "Ban CHAC CHAN muon tiep tuc? (Go 'YES' de xac nhan)"
+    $confirm2 = Read-Host "XAC NHAN LAN CUOI - Go 'YES' de tiep tuc"
     if ($confirm2 -ne "YES") {
-        Write-Host "Da huy. Phai go chinh xac 'YES' de tiep tuc." -ForegroundColor Yellow
+        Write-Host "Da huy." -ForegroundColor Yellow
         return
     }
 
     try {
         Write-Host ""
-        Write-Host "Dang mo System Restore..." -ForegroundColor Cyan
-        Write-Host "Vui long chon Restore Point va nhan Finish neu muon thuc hien." -ForegroundColor Yellow
-        
-        # Khoi chay System Restore GUI
+        Write-Host "Dang mo giao dien System Restore..." -ForegroundColor Cyan
         Start-Process -FilePath "rstrui.exe" -Wait
-        
-        Write-Host ""
-        Write-Host "System Restore da duoc mo." -ForegroundColor Green
-        Write-Host "Neu ban da chon Restore Point va nhan Finish, may se khoi dong lai de khoi phuc." -ForegroundColor Gray
+        Write-Host "System Restore GUI da duoc mo." -ForegroundColor Green
+        Write-Host "Hay chon Restore Point va nhan Finish neu ban muon thuc hien khoi phuc." -ForegroundColor Gray
     }
     catch {
-        Write-Host "Loi khi mo System Restore: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "Loi: $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 # -------------------------------
