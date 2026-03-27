@@ -116,14 +116,14 @@ function Show-Menu {
 
     # INSTALL & UNINSTALL TOOLS
     Draw-Section "Install Tools" "Uninstall Tools" $menuWidth $leftPadding
-    Draw-Line "[41] Chrome"               "[61] Remove Chrome"             $menuWidth $leftPadding
-    Draw-Line "[42] Edge"                 "[62] Remove Edge"               $menuWidth $leftPadding
-    Draw-Line "[43] Firefox"              "[63] Remove Firefox"            $menuWidth $leftPadding
-    Draw-Line "[44] CPU-Z"                "[64] Remove CPU-Z"              $menuWidth $leftPadding
-    Draw-Line "[45] GPU-Z"                "[65] Remove GPU-Z"              $menuWidth $leftPadding
-    Draw-Line "[46] CrystalDiskInfo"      "[66] Remove CrystalDiskInfo"    $menuWidth $leftPadding
-    Draw-Line "[47] HWMonitor"            "[67] Remove HWMonitor"          $menuWidth $leftPadding
-    Draw-Line "[48] Office 365"           "[68] Remove Office"             $menuWidth $leftPadding
+    Draw-Line "[41] Chrome"               "[51] Remove Chrome"             $menuWidth $leftPadding
+    Draw-Line "[42] Edge"                 "[52] Remove Edge"               $menuWidth $leftPadding
+    Draw-Line "[43] Firefox"              "[53] Remove Firefox"            $menuWidth $leftPadding
+    Draw-Line "[44] CPU-Z"                "[54] Remove CPU-Z"              $menuWidth $leftPadding
+    Draw-Line "[45] GPU-Z"                "[55] Remove GPU-Z"              $menuWidth $leftPadding
+    Draw-Line "[46] CrystalDiskInfo"      "[56] Remove CrystalDiskInfo"    $menuWidth $leftPadding
+    Draw-Line "[47] HWMonitor"            "[57] Remove HWMonitor"          $menuWidth $leftPadding
+    Draw-Line "[48] Office 365"           "[58] Remove Office"             $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # Help & Exit
@@ -198,14 +198,14 @@ while ($true) {
             "48" { Install-Office }
 
             
-            "61" { Uninstall-Chrome }
-            "62" { Uninstall-Edge }
-            "63" { Uninstall-Firefox }
-            "64" { Uninstall-CPUZ }
-            "65" { Uninstall-GPUZ }
-            "66" { Uninstall-CrystalDiskInfo }
-            "67" { Uninstall-HWMonitor }
-            "68" { Uninstall-Office }
+            "51" { Uninstall-Chrome }
+            "52" { Uninstall-Edge }
+            "53" { Uninstall-Firefox }
+            "54" { Uninstall-CPUZ }
+            "55" { Uninstall-GPUZ }
+            "56" { Uninstall-CrystalDiskInfo }
+            "57" { Uninstall-HWMonitor }
+            "58" { Uninstall-Office }
             
             "99" { Show-Readme }
             "0"  {
