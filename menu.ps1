@@ -86,7 +86,7 @@ function Draw-Section {
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 90
+    $menuWidth = 82
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
 
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
@@ -98,7 +98,7 @@ function Show-Menu {
     Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"       $menuWidth $leftPadding
     Draw-Line "[4] Clear Recycle Bin"     "[14] Create Restore Point"      $menuWidth $leftPadding
     Draw-Line "[5] Clean Logs"            "[15] System Restore (Latest)"   $menuWidth $leftPadding
-    Draw-Line "[6] Clean System Restore Point"                             $menuWidth $leftPadding
+    Draw-Line "[6] Clear Restore Points"                                   $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # NETWORK TOOLS & WINDOWS QUICK TOOLS
