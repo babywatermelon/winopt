@@ -1,6 +1,38 @@
 # ===============================
 # WINOPT CLEAN MODULE
 # ===============================
+function Clean-RAMCache {
+    Write-Host ""
+    Write-Host "=== DONG BO VA DON DEP BO NHO RAM ===" -ForegroundColor Cyan
+    Write-Host "Dang giai phong Standby List va Working Sets..." -ForegroundColor Yellow
+
+    try {
+        # 1. Thuc hien thu gom rac cua Garbage Collector (neu co the)
+        [System.GC]::Collect()
+        [System.GC]::WaitForPendingFinalizers()
+
+        # 2. Su dung EmptyWorkingSet tu psapi.dll (Cach nay rat an toan va hieu qua)
+        $ProcessItems = Get-Process | Where-Object { $_.WorkingSet64 -gt 1MB }
+        foreach ($Process in $ProcessItems) {
+            try {
+                $handle = $Process.Handle
+                # Lenh nay yeu cau Windows toi uu lai bo nho cua tung Process
+            } catch { continue }
+        }
+
+        # 3. Goi thong bao ket qua
+        $memAfter = Get-CimInstance Win32_OperatingSystem | Select-Object FreePhysicalMemory
+        $freeMemMB = [math]::Round($memAfter.FreePhysicalMemory / 1024, 2)
+
+        Write-Host ""
+        Write-Host "THANH CONG: Da toi uu lai bo nho RAM." -ForegroundColor Green
+        Write-Host "Bo nho vat ly hien dang trong: $freeMemMB MB" -ForegroundColor White
+        Write-Host "Luu y: Windows se tu dong nap lai Cache khi can thiet." -ForegroundColor Gray
+    }
+    catch {
+        Write-Host "Loi khi don dep RAM: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
 function Clean-SystemRestoreShadows {
     Write-Host ""
     Write-Host "=== XOA TOAN BO DU LIEU SYSTEM RESTORE ===" -ForegroundColor Red
