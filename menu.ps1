@@ -52,12 +52,15 @@ function Draw-Line {
     $innerWidth = $menuWidth - 4
     $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
     
-    # Fix PadRight crash by ensuring totalWidth is never negative
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
     
-    $leftPadded = $leftText.PadRight($half).Substring(0, $half)
-    $rightPadded = $rightText.PadRight($half).Substring(0, $half)
+    # Fix PadRight crash bằng cách giới hạn độ dài Substring
+    $leftPadded = $leftText.PadRight($half)
+    if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
+    
+    $rightPadded = $rightText.PadRight($half)
+    if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
 
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor White
@@ -73,8 +76,11 @@ function Draw-Section {
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
 
-    $leftPadded = $leftText.PadRight($half).Substring(0, $half)
-    $rightPadded = $rightText.PadRight($half).Substring(0, $half)
+    $leftPadded = $leftText.PadRight($half)
+    if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
+    
+    $rightPadded = $rightText.PadRight($half)
+    if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
 
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor Yellow
@@ -94,11 +100,11 @@ function Show-Menu {
     # SYSTEM CLEANUP & REPAIR TOOLS
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp"            "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
-    Draw-Line "[2] Clear Prefetch"        "[12] DISM Repair"               $menuWidth $leftPadding
-    Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"       $menuWidth $leftPadding
+    Draw-Line "[2] Clear Prefetch"        "[12] DISM Repair"                $menuWidth $leftPadding
+    Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"        $menuWidth $leftPadding
     Draw-Line "[4] Clear Recycle Bin"     "[14] Create Restore Point"      $menuWidth $leftPadding
     Draw-Line "[5] Clean Logs"            "[15] System Restore (Latest)"   $menuWidth $leftPadding
-    Draw-Line "[6] Clean RAM cache"  ""                                    $menuWidth $leftPadding
+    Draw-Line "[6] Clean RAM cache"       ""                               $menuWidth $leftPadding
     Draw-Line "[7] Clear Restore Points"  ""                               $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
@@ -115,16 +121,24 @@ function Show-Menu {
     Draw-Line ""                          "[39] System Info GUI"           $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    # WINDOWS CONTROL SECTION
+    Draw-Section "Windows Update Control" "Security Control" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Windows Update"    "[51] Disable Windows Defender"  $menuWidth $leftPadding
+    Draw-Line "[42] Enable Windows Update"     "[52] Enable Windows Defender"   $menuWidth $leftPadding
+    Draw-Line "[43] Disable Firewall"          "[53] Disable Virus Protection"  $menuWidth $leftPadding
+    Draw-Line "[44] Enable Firewall"           "[54] Enable Virus Protection"   $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
+
     # INSTALL & UNINSTALL TOOLS
     Draw-Section "Install Tools" "Uninstall Tools" $menuWidth $leftPadding
-    Draw-Line "[41] Chrome"               "[51] Remove Chrome"             $menuWidth $leftPadding
-    Draw-Line "[42] Edge"                 "[52] Remove Edge"               $menuWidth $leftPadding
-    Draw-Line "[43] Firefox"              "[53] Remove Firefox"            $menuWidth $leftPadding
-    Draw-Line "[44] CPU-Z"                "[54] Remove CPU-Z"              $menuWidth $leftPadding
-    Draw-Line "[45] GPU-Z"                "[55] Remove GPU-Z"              $menuWidth $leftPadding
-    Draw-Line "[46] CrystalDiskInfo"      "[56] Remove CrystalDiskInfo"    $menuWidth $leftPadding
-    Draw-Line "[47] HWMonitor"            "[57] Remove HWMonitor"          $menuWidth $leftPadding
-    Draw-Line "[48] Office 365"           "[58] Remove Office"             $menuWidth $leftPadding
+    Draw-Line "[71] Chrome"                "[81] Remove Chrome"             $menuWidth $leftPadding
+    Draw-Line "[72] Edge"                  "[82] Remove Edge"               $menuWidth $leftPadding
+    Draw-Line "[73] Firefox"               "[83] Remove Firefox"            $menuWidth $leftPadding
+    Draw-Line "[74] CPU-Z"                 "[84] Remove CPU-Z"              $menuWidth $leftPadding
+    Draw-Line "[75] GPU-Z"                 "[85] Remove GPU-Z"              $menuWidth $leftPadding
+    Draw-Line "[76] CrystalDiskInfo"       "[86] Remove CrystalDiskInfo"    $menuWidth $leftPadding
+    Draw-Line "[77] HWMonitor"             "[87] Remove HWMonitor"          $menuWidth $leftPadding
+    Draw-Line "[78] Office 365"            "[88] Remove Office"             $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # Help & Exit
@@ -140,7 +154,7 @@ function Show-Readme {
     $readme = @"
 ===========================================================
                     WINOPT TOOL
-         Windows Optimization & Repair Toolkit
+          Windows Optimization & Repair Toolkit
 ===========================================================
 WinOpt la cong cu toi uu va sua loi Windows.
 Nen chay bang quyen Administrator.
@@ -160,7 +174,7 @@ while ($true) {
 
     try {
         switch ($choice) {
-            # Code switch giữ nguyên như cũ của bạn...
+            # SYSTEM CLEANUP
             "1"  { Clean-Temp }
             "2"  { Clean-Prefetch }
             "3"  { Clean-WindowsUpdate }
@@ -169,17 +183,20 @@ while ($true) {
             "6"  { Clean-RAMCache }
             "7"  { Clean-SystemRestoreShadows }
             
+            # REPAIR
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
             "14" { Create-RestorePoint }
             "15" { Restore-ComputerPoint }
             
+            # NETWORK
             "21" { Flush-DNS }
             "22" { Network-Reset }
             "23" { Renew-IP }
             "24" { Ping-Test }
             
+            # QUICK TOOLS
             "31" { Open-TaskManager }
             "32" { Open-ControlPanel }
             "33" { Open-DeviceManager }
@@ -189,30 +206,41 @@ while ($true) {
             "37" { Open-StartupApps }
             "38" { Open-SystemInfo }
             "39" { Show-SystemInfoGUI }
-            
-            "41" { Install-Chrome }
-            "42" { Install-Edge }
-            "43" { Install-Firefox }
-            "44" { Install-CPUZ }
-            "45" { Install-GPUZ }
-            "46" { Install-CrystalDiskInfo }
-            "47" { Install-HWMonitor }
-            "48" { Install-Office }
 
+            # WINDOWS CONTROL
+            "41" { Disable-WindowsUpdate }
+            "42" { Enable-WindowsUpdate }
+            "43" { Set-Firewall -Status "Disable" }
+            "44" { Set-Firewall -Status "Enable" }
+            "51" { Set-Defender -Status "Disable" }
+            "52" { Set-Defender -Status "Enable" }
+            "53" { Set-RealTimeProtection -Status "Disable" }
+            "54" { Set-RealTimeProtection -Status "Enable" }
             
-            "51" { Uninstall-Chrome }
-            "52" { Uninstall-Edge }
-            "53" { Uninstall-Firefox }
-            "54" { Uninstall-CPUZ }
-            "55" { Uninstall-GPUZ }
-            "56" { Uninstall-CrystalDiskInfo }
-            "57" { Uninstall-HWMonitor }
-            "58" { Uninstall-Office }
+            # INSTALL TOOLS
+            "71" { Install-Chrome }
+            "72" { Install-Edge }
+            "73" { Install-Firefox }
+            "74" { Install-CPUZ }
+            "75" { Install-GPUZ }
+            "76" { Install-CrystalDiskInfo }
+            "77" { Install-HWMonitor }
+            "78" { Install-Office }
+
+            # UNINSTALL TOOLS
+            "81" { Uninstall-Chrome }
+            "82" { Uninstall-Edge }
+            "83" { Uninstall-Firefox }
+            "84" { Uninstall-CPUZ }
+            "85" { Uninstall-GPUZ }
+            "86" { Uninstall-CrystalDiskInfo }
+            "87" { Uninstall-HWMonitor }
+            "88" { Uninstall-Office }
             
             "99" { Show-Readme }
             "0"  {
                 $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
-                if ($confirm -match "y") { return }
+                if ($confirm -match "y") { exit }
             }
             default { Write-Host "Invalid option!" -ForegroundColor Red }
         }
