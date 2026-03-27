@@ -55,7 +55,6 @@ function Draw-Line {
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
     
-    # Fix PadRight crash bằng cách giới hạn độ dài Substring
     $leftPadded = $leftText.PadRight($half)
     if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
     
@@ -100,8 +99,8 @@ function Show-Menu {
     # SYSTEM CLEANUP & REPAIR TOOLS
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp"            "[11] Repair Windows (SFC)"      $menuWidth $leftPadding
-    Draw-Line "[2] Clear Prefetch"        "[12] DISM Repair"                $menuWidth $leftPadding
-    Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"        $menuWidth $leftPadding
+    Draw-Line "[2] Clear Prefetch"        "[12] DISM Repair"               $menuWidth $leftPadding
+    Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"       $menuWidth $leftPadding
     Draw-Line "[4] Clear Recycle Bin"     "[14] Create Restore Point"      $menuWidth $leftPadding
     Draw-Line "[5] Clean Logs"            "[15] System Restore (Latest)"   $menuWidth $leftPadding
     Draw-Line "[6] Clean RAM cache"       ""                               $menuWidth $leftPadding
@@ -125,8 +124,10 @@ function Show-Menu {
     Draw-Section "Windows Update Control" "Security Control" $menuWidth $leftPadding
     Draw-Line "[41] Disable Windows Update"    "[51] Disable Windows Defender"  $menuWidth $leftPadding
     Draw-Line "[42] Enable Windows Update"     "[52] Enable Windows Defender"   $menuWidth $leftPadding
-    Draw-Line "[43] Disable Firewall"          "[53] Disable Virus Protection"  $menuWidth $leftPadding
-    Draw-Line "[44] Enable Firewall"           "[54] Enable Virus Protection"   $menuWidth $leftPadding
+    Draw-Line ""                               "[53] Disable Virus Protection"  $menuWidth $leftPadding
+    Draw-Line ""                               "[54] Enable Virus Protection"   $menuWidth $leftPadding
+    Draw-Line ""                               "[55] Enable Firewall"           $menuWidth $leftPadding
+    Draw-Line ""                               "[56] Disable Firewall"          $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # INSTALL & UNINSTALL TOOLS
@@ -210,12 +211,12 @@ while ($true) {
             # WINDOWS CONTROL
             "41" { Disable-WindowsUpdate }
             "42" { Enable-WindowsUpdate }
-            "43" { Set-Firewall -Status "Disable" }
-            "44" { Set-Firewall -Status "Enable" }
             "51" { Set-Defender -Status "Disable" }
             "52" { Set-Defender -Status "Enable" }
             "53" { Set-RealTimeProtection -Status "Disable" }
             "54" { Set-RealTimeProtection -Status "Enable" }
+            "55" { Set-Firewall -Status "Enable" }
+            "56" { Set-Firewall -Status "Disable" }
             
             # INSTALL TOOLS
             "71" { Install-Chrome }
