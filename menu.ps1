@@ -98,7 +98,8 @@ function Show-Menu {
     Draw-Line "[3] Clean Update Cache"    "[13] Full Windows Repair"       $menuWidth $leftPadding
     Draw-Line "[4] Clear Recycle Bin"     "[14] Create Restore Point"      $menuWidth $leftPadding
     Draw-Line "[5] Clean Logs"            "[15] System Restore (Latest)"   $menuWidth $leftPadding
-    Draw-Line "[6] Clear Restore Points"  ""                               $menuWidth $leftPadding
+    Draw-Line "[6] Clean RAM cache"  ""                                    $menuWidth $leftPadding
+    Draw-Line "[7] Clear Restore Points"  ""                               $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # NETWORK TOOLS & WINDOWS QUICK TOOLS
@@ -165,7 +166,8 @@ while ($true) {
             "3"  { Clean-WindowsUpdate }
             "4"  { Clear-Recycle }
             "5"  { Clean-WindowsLogs }
-            "6"  { Clean-SystemRestoreShadows }
+            "6"  { Clean-RAMCache }
+            "7"  { Clean-SystemRestoreShadows }
             
             "11" { Repair-SFC }
             "12" { Repair-DISM }
