@@ -16,7 +16,7 @@ Write-Host "Downloading menu..." -ForegroundColor DarkGray
 Invoke-WebRequest "https://raw.githubusercontent.com/babywatermelon/winopt/main/menu.ps1" -OutFile "$base\menu.ps1"
 
 # Download modules
-$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall")
+$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "windowsupdate", "security")
 
 foreach ($m in $moduleList) {
     $url = "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/$m.ps1"
