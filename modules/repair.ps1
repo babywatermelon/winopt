@@ -76,42 +76,32 @@ function Restore-ComputerPoint {
         return
     }
 
-    # 2. Lay danh sach cac diem Restore hien co
-    Write-Host "Dang tai danh sach cac diem khoi phuc..." -ForegroundColor Yellow
+    # 2. Kiem tra danh sach Restore Point
+    Write-Host "Dang kiem tra du lieu khoi phuc..." -ForegroundColor Yellow
     $restorePoints = Get-ComputerRestorePoint -ErrorAction SilentlyContinue
 
     if (-not $restorePoints) {
-        Write-Host "Khong tim thay diem khoi phuc (Restore Point) nao trong he thong!" -ForegroundColor Red
-        Write-Host "Goi y: Ban hay dung chuc nang [14] de tao mot diem truoc." -ForegroundColor Gray
+        Write-Host "Khong tim thay diem khoi phuc nao!" -ForegroundColor Red
         return
     }
 
-    # Hiển thị điểm mới nhất cho người dùng xem
+    # Hien thi diem gan nhat de nguoi dung biet
     $latest = $restorePoints | Sort-Object CreationTime -Descending | Select-Object -First 1
-    Write-Host "Diem khoi phuc gan nhat duoc tim thay:" -ForegroundColor White
-    Write-Host " - Ten: $($latest.Description)" -ForegroundColor Green
-    Write-Host " - Ngay tao: $($latest.CreationTime)" -ForegroundColor Green
-    Write-Host " - ID: $($latest.SequenceNumber)" -ForegroundColor Green
+    Write-Host "Tim thay diem khoi phuc: $($latest.Description)" -ForegroundColor Green
+    Write-Host "Ngay tao: $($latest.CreationTime)" -ForegroundColor Gray
     Write-Host ""
 
-    # 3. Xac nhan khoi phuc
-    Write-Host "Luu y: Khi bat dau, Windows se mo trinh khoi phuc." -ForegroundColor Yellow
-    $confirm = Read-Host "Ban co muon tien hanh khoi phuc khong? (Y/N)"
-    
+    # 3. Thuc thi (Thay doi cach goi de tranh loi 0x80070057)
+    $confirm = Read-Host "Mo trinh System Restore Wizard ngay bay gio? (Y/N)"
     if ($confirm -eq "Y" -or $confirm -eq "y") {
-        Write-Host "Dang khoi chay System Restore Wizard..." -ForegroundColor Cyan
+        Write-Host "Dang mo giao dien System Restore..." -ForegroundColor Cyan
         
-        # Goi trinh Restore cua Windows (rstrui.exe)
-        # Lenh nay se mo cua so Restore va tu chon diem gan nhat neu co the
-        Start-Process "rstrui.exe" -ArgumentList "/latest" -Wait
+        # Cach 1: Mo giao dien mac dinh (An toan nhat, tranh loi tham so)
+        Start-Process "rstrui.exe"
         
-        Write-Host ""
-        Write-Host "Da gui yeu cau khoi phuc. Vui long lam theo huong dan tren man hinh Windows." -ForegroundColor White
-    } else {
-        Write-Host "Da huy thao tac khoi phuc." -ForegroundColor Yellow
+        Write-Host "Vui long chon 'Choose a different restore point' trong cua so vua hien len." -ForegroundColor White
     }
 }
-
 # -------------------------------
 function Repair-DISM {
     Write-Host ""
