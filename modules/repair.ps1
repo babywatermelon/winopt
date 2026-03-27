@@ -62,7 +62,53 @@ function Create-RestorePoint {
         Write-Host "- Dam bao o C: co duong luong trong (it nhat 5-10GB)" -ForegroundColor Gray
     }
 }
+# -------------------------------
+function Run-SystemRestore {
+    Write-Host ""
+    Write-Host "=== RUN SYSTEM RESTORE (KHÔI PHỤC HỆ THỐNG) ===" -ForegroundColor Red
+    Write-Host "CẢNH BÁO NGHIÊM TRỌNG" -ForegroundColor Red
+    Write-Host ""
 
+    Write-Host "Chuc nang nay se:" -ForegroundColor Yellow
+    Write-Host "- Khoi phuc he thong ve thoi diem cua mot Restore Point" -ForegroundColor Gray
+    Write-Host "- May tinh se TU DONG KHOI DONG LAI" -ForegroundColor Gray
+    Write-Host "- Cac chuong trinh cai sau Restore Point se bi go" -ForegroundColor Gray
+    Write-Host "- File ca nhan (anh, tai lieu...) KHONG bi xoa" -ForegroundColor Gray
+    Write-Host ""
+
+    Write-Host "!!! DAY LA CHUC NANG NGUY HIEM - CHI DUNG CHO NGUOI BIET RO HOI QUA !!!" -ForegroundColor Red
+    Write-Host ""
+
+    # Xac nhan muc 1
+    $confirm1 = Read-Host "Ban HIEM HIEM hieu rang may se khoi dong lai va he thong co the bi thay doi? (Y/N)"
+    if ($confirm1 -ne "Y" -and $confirm1 -ne "y") {
+        Write-Host "Da huy chuc nang System Restore." -ForegroundColor Green
+        return
+    }
+
+    # Xac nhan muc 2
+    $confirm2 = Read-Host "Ban CHAC CHAN muon tiep tuc? (Go 'YES' de xac nhan)"
+    if ($confirm2 -ne "YES") {
+        Write-Host "Da huy. Phai go chinh xac 'YES' de tiep tuc." -ForegroundColor Yellow
+        return
+    }
+
+    try {
+        Write-Host ""
+        Write-Host "Dang mo System Restore..." -ForegroundColor Cyan
+        Write-Host "Vui long chon Restore Point va nhan Finish neu muon thuc hien." -ForegroundColor Yellow
+        
+        # Khoi chay System Restore GUI
+        Start-Process -FilePath "rstrui.exe" -Wait
+        
+        Write-Host ""
+        Write-Host "System Restore da duoc mo." -ForegroundColor Green
+        Write-Host "Neu ban da chon Restore Point va nhan Finish, may se khoi dong lai de khoi phuc." -ForegroundColor Gray
+    }
+    catch {
+        Write-Host "Loi khi mo System Restore: $($_.Exception.Message)" -ForegroundColor Red
+    }
+}
 # -------------------------------
 function Repair-DISM {
     Write-Host ""
