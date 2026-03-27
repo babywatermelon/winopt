@@ -40,38 +40,56 @@ function Disable-WindowsUpdate {
 }
 
 function Enable-WindowsUpdate {
-    Write-Host "`n--- Dang BAT LAI Windows Update (phien ban day du) ---" -ForegroundColor Cyan
+    Write-Host "`n--- Dang BAT LAI Windows Update (Reset toan bo) ---" -ForegroundColor Cyan
 
-    # 1. Khôi phục các services về trạng thái mặc định
-    $services = @("wuauserv", "bits", "dosvc", "UsoSvc", "WaaSMedicSvc")
-    foreach ($service in $services) {
-        Set-Service -Name $service -StartupType Automatic -ErrorAction SilentlyContinue
-        Start-Service -Name $service -ErrorAction SilentlyContinue
-        Write-Host "Service $service da duoc bat lai (Automatic)" -ForegroundColor Gray
+    # 1. Reset registry chặn Update
+    $regPaths = @(
+        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
+        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
+    )
+    foreach ($path in $regPaths) {
+        if (Test-Path $path) {
+            Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue
+        }
     }
 
-    # 2. Xóa registry chặn Auto Update
-    $regPathAU = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
-    if (Test-Path $regPathAU) {
-        Remove-Item -Path $regPathAU -Recurse -Force -ErrorAction SilentlyContinue
-    }
-
-    $regPathWU = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
-    if (Test-Path $regPathWU) {
-        Remove-ItemProperty -Path $regPathWU -Name "NoAutoUpdate" -ErrorAction SilentlyContinue
-        Remove-ItemProperty -Path $regPathWU -Name "AUOptions" -ErrorAction SilentlyContinue
-    }
-
-    # Xóa Pause Updates đến năm 2099
+    # Xóa Pause Updates
     $uxPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"
     if (Test-Path $uxPath) {
         Remove-ItemProperty -Path $uxPath -Name "PauseUpdatesExpiryTime" -ErrorAction SilentlyContinue
     }
 
-    # 3. Bật lại các Scheduled Tasks quan trọng
+    # 2. Khôi phục các service quan trọng về Automatic
+    $services = @("wuauserv", "bits", "dosvc", "UsoSvc", "WaaSMedicSvc", "CryptSvc", "msiserver")
+    foreach ($svc in $services) {
+        try {
+            Set-Service -Name $svc -StartupType Automatic -ErrorAction Stop
+            Write-Host "Service $svc da set Automatic" -ForegroundColor Gray
+        } catch {
+            Write-Host "Khong the set $svc : $($_.Exception.Message)" -ForegroundColor Yellow
+        }
+    }
+
+    # 3. Reset Windows Update Components (rất quan trọng)
+    Write-Host "Dang reset Windows Update cache..." -ForegroundColor Yellow
+    Stop-Service -Name wuauserv, bits, cryptSvc, msiserver -Force -ErrorAction SilentlyContinue
+
+    $folders = @("$env:windir\SoftwareDistribution", "$env:windir\System32\catroot2")
+    foreach ($folder in $folders) {
+        if (Test-Path $folder) {
+            Rename-Item $folder "$folder.old" -Force -ErrorAction SilentlyContinue
+        }
+    }
+
+    # 4. Bật lại service
+    Start-Service -Name bits, cryptSvc, msiserver -ErrorAction SilentlyContinue
+    Start-Service -Name wuauserv -ErrorAction SilentlyContinue
+
+    # 5. Bật lại Scheduled Tasks
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\WindowsUpdate\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
 
-    Write-Host "`nTHANH CONG: Windows Update da duoc bat lai!" -ForegroundColor Green
-    Write-Host "Khuyen nghi: Restart may de ap dung hoan chinh." -ForegroundColor Cyan
+    Write-Host "`nTHANH CONG: Da reset va bat lai Windows Update!" -ForegroundColor Green
+    Write-Host "Vui long RESTART may ngay bay gio de ap dung." -ForegroundColor Magenta
+    Write-Host "Sau khi restart, mo Settings > Windows Update > Check for updates de kich hoat." -ForegroundColor Cyan
 }
