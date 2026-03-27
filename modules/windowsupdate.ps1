@@ -42,59 +42,37 @@ function Disable-WindowsUpdate {
 
 
 function Enable-WindowsUpdate {
-    Write-Host "`n--- BAT LAI Windows Update (WUB Style - Reset toan bo + Fix Permission) ---" -ForegroundColor Cyan
+    Write-Host "`n--- BAT LAI Windows Update (Mimic Manual + Reset) ---" -ForegroundColor Cyan
 
-    # 1. Reset Registry Policy chan Update
-    Write-Host "Dang xoa policy chan Windows Update..." -ForegroundColor Yellow
-    $regPaths = @(
-        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU",
-        "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate"
-    )
-    foreach ($path in $regPaths) {
-        if (Test-Path $path) { Remove-Item -Path $path -Recurse -Force -ErrorAction SilentlyContinue }
-    }
+    # 1. Reset policy
+    Write-Host "Xoa policy chan Update..." -ForegroundColor Yellow
+    Remove-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
 
-    # Xóa Pause Updates đến 2099
-    $uxPath = "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings"
-    if (Test-Path $uxPath) {
-        Remove-ItemProperty -Path $uxPath -Name "PauseUpdatesExpiryTime" -ErrorAction SilentlyContinue
-    }
-
-    # 2. Reset Security Descriptor (Permission) cho service - Cách mạnh nhất fix "Access is denied"
-    Write-Host "Dang reset quyen (Security Descriptor) cho cac service..." -ForegroundColor Yellow
-    try {
-        sc.exe sdset wuauserv "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" | Out-Null
-        sc.exe sdset bits "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWRPWPDTLOCRRC;;;PU)" | Out-Null
-        Write-Host "Da reset permission cho wuauserv va bits" -ForegroundColor Gray
-    } catch {
-        Write-Host "Khong the reset permission: $($_.Exception.Message)" -ForegroundColor Yellow
-    }
-
-    # 3. Set Startup Type = Automatic
-    Write-Host "Dang dat Startup Type = Automatic..." -ForegroundColor Yellow
+    # 2. Set Startup Type bằng sc.exe (ổn định hơn Set-Service)
+    Write-Host "Dat Startup Type = Automatic..." -ForegroundColor Yellow
     $services = @("wuauserv", "bits", "cryptSvc", "msiserver", "UsoSvc", "WaaSMedicSvc")
     foreach ($svc in $services) {
         sc.exe config $svc start= auto | Out-Null
         Write-Host "   $svc -> Automatic" -ForegroundColor Gray
     }
 
-    # 4. Reset Windows Update Cache
-    Write-Host "Dang reset cache Windows Update..." -ForegroundColor Yellow
+    # 3. Reset cache (rất quan trọng)
+    Write-Host "Reset cache Windows Update..." -ForegroundColor Yellow
     Stop-Service wuauserv, bits, cryptSvc, msiserver -Force -ErrorAction SilentlyContinue
 
     Remove-Item "$env:windir\SoftwareDistribution\*" -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$env:windir\System32\catroot2\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-    # 5. Start services
+    # 4. Start services (giống như bạn làm thủ công)
+    Write-Host "Dang khoi dong services..." -ForegroundColor Yellow
     Start-Service bits, cryptSvc, msiserver -ErrorAction SilentlyContinue
     Start-Service wuauserv -ErrorAction SilentlyContinue
 
-    # 6. Enable Scheduled Tasks
+    # 5. Enable tasks
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\WindowsUpdate\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
-    Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
 
     Write-Host "`n=== HOAN TAT ===" -ForegroundColor Green
-    Write-Host "Da reset va bat lai Windows Update." -ForegroundColor Green
-    Write-Host "Vui long RESTART MAY ngay bay gio de ap dung." -ForegroundColor Magenta
-    Write-Host "Sau restart, mo Settings > Windows Update > nhan 'Check for updates'." -ForegroundColor Cyan
+    Write-Host "Tool da thuc hien xong." -ForegroundColor Green
+    Write-Host "Vui long RESTART MAY ngay bay gio." -ForegroundColor Magenta
+    Write-Host "Sau restart, mo services.msc kiem tra Windows Update co o Automatic va Running khong." -ForegroundColor Cyan
 }
