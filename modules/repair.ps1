@@ -1,9 +1,5 @@
 # ===============================
 # WINOPT REPAIR MODULE
-# ===============================
-
-# -------------------------------
-# -------------------------------
 function Create-RestorePoint {
     Write-Host ""
     Write-Host "=== TAO SYSTEM RESTORE POINT ===" -ForegroundColor Cyan
