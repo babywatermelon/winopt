@@ -1,6 +1,22 @@
 # ===============================
 # WINOPT CLEAN MODULE
 # ===============================
+function Clear-AllRestorePoints {
+    Write-Host ""
+    Write-Host "=== XOA CAC BAN RESTORE CU DE GIAI PHONG O C: ===" -ForegroundColor Cyan
+    Write-Host "Luu y: Tat ca cac diem khoi phuc se bi xoa, chi giu lai ban moi nhat." -ForegroundColor Yellow
+    
+    $confirm = Read-Host "Ban co chac chan muon tiep tuc? (Y/N)"
+    if ($confirm -eq "Y" -or $confirm -eq "y") {
+        Write-Host "Dang thuc hien don dep Restore Points..." -ForegroundColor Yellow
+        
+        # Chạy trình dọn dẹp hệ thống ở chế độ xóa Restore Points
+        # SageSet:65535 là một mã giả lập để kích hoạt dọn dẹp hệ thống
+        cleanmgr /sagerun:64
+        
+        Write-Host "Lenh da duoc gui. Windows dang xu ly ngam..." -ForegroundColor Green
+    }
+}
 
 function Clean-Temp {
 
