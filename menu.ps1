@@ -104,10 +104,6 @@ function Show-Menu {
     Draw-Line "[48] Office 365"           "[68] Remove Office"             $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # ================== BROWSER TOOLS ==================
-    Draw-Section "Browser Tools" "" $menuWidth $leftPadding
-    Draw-Line "[71] Extension Manager"    ""                               $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
 
     # Help & Exit
     Draw-Line "[99] README / Help"        ""                               $menuWidth $leftPadding
@@ -257,8 +253,6 @@ while ($true) {
             "67" { Uninstall-HWMonitor }
             "68" { Uninstall-Office }
 
-            # Browser Tools
-            "71" { Remove-EdgeExtension }
 
             # Help & Exit
             "99" { Show-Readme }
