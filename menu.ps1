@@ -91,58 +91,58 @@ function Draw-Section {
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 110   # Tăng chiều rộng để hiển thị 3 cột thoải mái
+    $menuWidth = 120   # Tăng để đủ chỗ cho 3 cột
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
 
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
 
-    # System Cleanup & Repair
+    # === System Cleanup & Repair ===
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
-    Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
-    Draw-Line "[2] Clear Prefetch" "[12] DISM Repair" $menuWidth $leftPadding
-    Draw-Line "[3] Clean Update Cache" "[13] Full Windows Repair" $menuWidth $leftPadding
-    Draw-Line "[4] Clear Recycle Bin" "[14] Create Restore Point" $menuWidth $leftPadding
-    Draw-Line "[5] Clean Logs" "[15] System Restore" $menuWidth $leftPadding
-    Draw-Line "[6] Clean RAM cache" "" $menuWidth $leftPadding
-    Draw-Line "[7] Clear Restore Points" "" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
+    Draw-Line "[1] Clean Temp"      "[11] Repair Windows (SFC)"   "" $menuWidth $leftPadding
+    Draw-Line "[2] Clear Prefetch"  "[12] DISM Repair"            "" $menuWidth $leftPadding
+    Draw-Line "[3] Clean Update Cache" "[13] Full Windows Repair" "" $menuWidth $leftPadding
+    Draw-Line "[4] Clear Recycle Bin" "[14] Create Restore Point" "" $menuWidth $leftPadding
+    Draw-Line "[5] Clean Logs"      "[15] System Restore"         "" $menuWidth $leftPadding
+    Draw-Line "[6] Clean RAM cache" "" "" $menuWidth $leftPadding
+    Draw-Line "[7] Clear Restore Points" "" "" $menuWidth $leftPadding
+    Draw-Line "" "" "" $menuWidth $leftPadding
 
-    # Network & Quick Tools
+    # === Network & Quick Tools ===
     Draw-Section "Network Tools" "Windows Quick Tools" $menuWidth $leftPadding
-    Draw-Line "[21] Flush DNS" "[31] Task Manager" $menuWidth $leftPadding
-    Draw-Line "[22] Network Reset" "[32] Control Panel" $menuWidth $leftPadding
-    Draw-Line "[23] Renew IP" "[33] Device Manager" $menuWidth $leftPadding
-    Draw-Line "[24] Ping Test" "[34] Services" $menuWidth $leftPadding
-    Draw-Line "" "[35] Disk Management" $menuWidth $leftPadding
-    Draw-Line "" "[36] System Properties" $menuWidth $leftPadding
-    Draw-Line "" "[37] Startup Apps" $menuWidth $leftPadding
-    Draw-Line "" "[38] SystemInfo (CMD)" $menuWidth $leftPadding
-    Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
+    Draw-Line "[21] Flush DNS"      "[31] Task Manager"     "" $menuWidth $leftPadding
+    Draw-Line "[22] Network Reset"  "[32] Control Panel"    "" $menuWidth $leftPadding
+    Draw-Line "[23] Renew IP"       "[33] Device Manager"   "" $menuWidth $leftPadding
+    Draw-Line "[24] Ping Test"      "[34] Services"         "" $menuWidth $leftPadding
+    Draw-Line "" "[35] Disk Management" "" $menuWidth $leftPadding
+    Draw-Line "" "[36] System Properties" "" $menuWidth $leftPadding
+    Draw-Line "" "[37] Startup Apps" "" $menuWidth $leftPadding
+    Draw-Line "" "[38] SystemInfo (CMD)" "" $menuWidth $leftPadding
+    Draw-Line "" "[39] System Info GUI" "" $menuWidth $leftPadding
+    Draw-Line "" "" "" $menuWidth $leftPadding
 
-    # Windows Update + Security + Gaming (3 nhóm ghép lại)
-    Draw-Section "Windows Update & Security & Gaming" "" $menuWidth $leftPadding
-    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" "[61] Disable Game Bar" $menuWidth $leftPadding
-    Draw-Line "[42] Enable Win Update"  "[52] Enable Defender"  "[62] Enable Game Bar"  $menuWidth $leftPadding
+    # === Windows Update + Security + Gaming (3 cột) ===
+    Draw-Section "Windows Update   Security   Gaming" "" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" "[61] Disable Game Bar"     $menuWidth $leftPadding
+    Draw-Line "[42] Enable Win Update"  "[52] Enable Defender"  "[62] Enable Game Bar"      $menuWidth $leftPadding
     Draw-Line "" "[53] Disable Virus Prot." "[63] Disable Game Mode" $menuWidth $leftPadding
     Draw-Line "" "[54] Enable Virus Prot."  "[64] Enable Game Mode"  $menuWidth $leftPadding
-    Draw-Line "" "[55] Enable Firewall"    "[65] High Performance"  $menuWidth $leftPadding
-    Draw-Line "" "[56] Disable Firewall"   "[66] Balanced"          $menuWidth $leftPadding
+    Draw-Line "" "[55] Enable Firewall"     "[65] High Performance"  $menuWidth $leftPadding
+    Draw-Line "" "[56] Disable Firewall"    "[66] Balanced"          $menuWidth $leftPadding
     Draw-Line "" "" "[67] Disable Core Isolation" $menuWidth $leftPadding
     Draw-Line "" "" "[68] Enable Core Isolation"  $menuWidth $leftPadding
     Draw-Line "" "" "" $menuWidth $leftPadding
 
-    # Install & Uninstall
+    # === Install & Uninstall ===
     Draw-Section "Install Tools" "Uninstall Tools" $menuWidth $leftPadding
-    Draw-Line "[71] Chrome" "[81] Remove Chrome" $menuWidth $leftPadding
-    Draw-Line "[72] Edge" "[82] Remove Edge" $menuWidth $leftPadding
-    Draw-Line "[73] Firefox" "[83] Remove Firefox" $menuWidth $leftPadding
-    Draw-Line "[74] CPU-Z" "[84] Remove CPU-Z" $menuWidth $leftPadding
-    Draw-Line "[75] GPU-Z" "[85] Remove GPU-Z" $menuWidth $leftPadding
-    Draw-Line "[76] CrystalDiskInfo" "[86] Remove CrystalDiskInfo" $menuWidth $leftPadding
-    Draw-Line "[77] HWMonitor" "[87] Remove HWMonitor" $menuWidth $leftPadding
-    Draw-Line "[78] Office 365" "[88] Remove Office" $menuWidth $leftPadding
-    Draw-Line "" "" $menuWidth $leftPadding
+    Draw-Line "[71] Chrome" "[81] Remove Chrome" "" $menuWidth $leftPadding
+    Draw-Line "[72] Edge"   "[82] Remove Edge"   "" $menuWidth $leftPadding
+    Draw-Line "[73] Firefox" "[83] Remove Firefox" "" $menuWidth $leftPadding
+    Draw-Line "[74] CPU-Z"  "[84] Remove CPU-Z"  "" $menuWidth $leftPadding
+    Draw-Line "[75] GPU-Z"  "[85] Remove GPU-Z"  "" $menuWidth $leftPadding
+    Draw-Line "[76] CrystalDiskInfo" "[86] Remove CrystalDiskInfo" "" $menuWidth $leftPadding
+    Draw-Line "[77] HWMonitor" "[87] Remove HWMonitor" "" $menuWidth $leftPadding
+    Draw-Line "[78] Office 365" "[88] Remove Office" "" $menuWidth $leftPadding
+    Draw-Line "" "" "" $menuWidth $leftPadding
 
     # Help & Exit
     Draw-Line "[99] README / Help" "" "" $menuWidth $leftPadding
@@ -151,7 +151,6 @@ function Show-Menu {
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
     Write-Host ""
 }
-
 # ===== README =====
 function Show-Readme {
     $readme = @"
