@@ -42,37 +42,53 @@ function Disable-WindowsUpdate {
 
 
 function Enable-WindowsUpdate {
-    Write-Host "`n--- BAT LAI Windows Update (Mimic Manual + Reset) ---" -ForegroundColor Cyan
+    Write-Host "`n--- BAT LAI Windows Update TRIET DE (Full Reset) ---" -ForegroundColor Cyan
 
-    # 1. Reset policy
-    Write-Host "Xoa policy chan Update..." -ForegroundColor Yellow
-    Remove-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
-
-    # 2. Set Startup Type bằng sc.exe (ổn định hơn Set-Service)
-    Write-Host "Dat Startup Type = Automatic..." -ForegroundColor Yellow
-    $services = @("wuauserv", "bits", "cryptSvc", "msiserver", "UsoSvc", "WaaSMedicSvc")
+    # 1. Stop tất cả services liên quan
+    Write-Host "Dang stop services..." -ForegroundColor Yellow
+    $services = @("wuauserv", "bits", "cryptSvc", "msiserver", "UsoSvc", "WaaSMedicSvc", "DoSvc")
     foreach ($svc in $services) {
-        sc.exe config $svc start= auto | Out-Null
-        Write-Host "   $svc -> Automatic" -ForegroundColor Gray
+        Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue
     }
 
-    # 3. Reset cache (rất quan trọng)
-    Write-Host "Reset cache Windows Update..." -ForegroundColor Yellow
-    Stop-Service wuauserv, bits, cryptSvc, msiserver -Force -ErrorAction SilentlyContinue
+    # 2. Xóa hoàn toàn Policy (rất quan trọng)
+    Write-Host "Xoa toan bo Policy WindowsUpdate..." -ForegroundColor Yellow
+    Remove-Item "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item "HKLM:\SOFTWARE\Microsoft\WindowsUpdate\UX\Settings" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate" -Recurse -Force -ErrorAction SilentlyContinue
 
+    # 3. Reset Group Policy cache (giúp xóa "managed by your organization")
+    Remove-Item "C:\Windows\System32\GroupPolicy" -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item "C:\Windows\System32\GroupPolicyUsers" -Recurse -Force -ErrorAction SilentlyContinue
+
+    # 4. Reset permissions & startup type bằng sc.exe (ổn định hơn)
+    Write-Host "Reset Startup Type ve default..." -ForegroundColor Yellow
+    sc.exe config wuauserv start= demand | Out-Null      # Manual (Trigger Start) là mặc định
+    sc.exe config bits start= auto | Out-Null
+    sc.exe config cryptSvc start= auto | Out-Null
+    sc.exe config msiserver start= demand | Out-Null
+    sc.exe config UsoSvc start= demand | Out-Null
+    sc.exe config WaaSMedicSvc start= demand | Out-Null
+
+    # 5. Reset cache + folder quan trọng
+    Write-Host "Reset cache Windows Update..." -ForegroundColor Yellow
     Remove-Item "$env:windir\SoftwareDistribution\*" -Recurse -Force -ErrorAction SilentlyContinue
     Remove-Item "$env:windir\System32\catroot2\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-    # 4. Start services (giống như bạn làm thủ công)
-    Write-Host "Dang khoi dong services..." -ForegroundColor Yellow
+    # 6. Reset security descriptor (nếu bị deny access)
+    sc.exe sdset bits D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWLOCRRC;;;PU) | Out-Null
+    sc.exe sdset wuauserv D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;AU)(A;;CCLCSWLOCRRC;;;PU) | Out-Null
+
+    # 7. Start services
+    Write-Host "Khoi dong lai services..." -ForegroundColor Yellow
     Start-Service bits, cryptSvc, msiserver -ErrorAction SilentlyContinue
     Start-Service wuauserv -ErrorAction SilentlyContinue
 
-    # 5. Enable tasks
+    # 8. Enable lại Scheduled Tasks
     Get-ScheduledTask -TaskPath "\Microsoft\Windows\WindowsUpdate\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
+    Get-ScheduledTask -TaskPath "\Microsoft\Windows\UpdateOrchestrator\" -ErrorAction SilentlyContinue | Enable-ScheduledTask -ErrorAction SilentlyContinue
 
-    Write-Host "`n=== HOAN TAT ===" -ForegroundColor Green
-    Write-Host "Tool da thuc hien xong." -ForegroundColor Green
-    Write-Host "Vui long RESTART MAY ngay bay gio." -ForegroundColor Magenta
-    Write-Host "Sau restart, mo services.msc kiem tra Windows Update co o Automatic va Running khong." -ForegroundColor Cyan
+    Write-Host "`n=== HOAN TAT FULL RESET ===" -ForegroundColor Green
+    Write-Host "Vui long RESTART MAY ngay bay gio!" -ForegroundColor Magenta
+    Write-Host "Sau restart, mo services.msc → tim Windows Update, set Startup type = Manual (hoac Automatic), sau do Start service." -ForegroundColor Cyan
 }
