@@ -1,15 +1,34 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
-# ===== TỰ ĐỘNG CĂN CHỈNH KÍCH THƯỚC CỬA SỔ =====
+# ===== TỰ ĐỘNG CĂN CHỈNH KÍCH THƯỚC CỬA SỔ (CẢI TIẾN) =====
 try {
-    $size = $Host.UI.RawUI.WindowSize
-    if ($size.Width -lt 100) {
-        $size.Width = 100
-        $Host.UI.RawUI.WindowSize = $size
-    }
-} catch {}
+    $rawUI = $Host.UI.RawUI
 
-# ===== LOAD MODULES (ĐÃ SỬA) =====
+    # Thiết lập BufferSize lớn trước để tránh lỗi cắt ngang
+    $buffer = $rawUI.BufferSize
+    $buffer.Width = 200
+    $buffer.Height = 5000
+    $rawUI.BufferSize = $buffer
+
+    # Kích thước cửa sổ phù hợp với menu hiện tại
+    $desiredWidth = 118      # Rộng hơn để hiển thị tốt 2 cột
+    $desiredHeight = 52      # Cao đủ để hiển thị hết menu + khoảng trống
+
+    # Không vượt quá kích thước tối đa của màn hình console
+    $maxSize = $rawUI.MaxPhysicalWindowSize
+    if ($desiredWidth -gt $maxSize.Width)  { $desiredWidth = $maxSize.Width }
+    if ($desiredHeight -gt $maxSize.Height) { $desiredHeight = $maxSize.Height - 3 }
+
+    $windowSize = New-Object System.Management.Automation.Host.Size($desiredWidth, $desiredHeight)
+    $rawUI.WindowSize = $windowSize
+
+    Write-Host "Console da duoc tu dong resize de phu hop voi menu." -ForegroundColor DarkGray
+}
+catch {
+    # Bỏ qua nếu không resize được (chạy trong một số môi trường đặc biệt)
+}
+
+# ===== LOAD MODULES =====
 $base = "$env:TEMP\winopt"
 $modulePath = Join-Path $base "modules"
 
@@ -51,16 +70,16 @@ function Draw-Line {
     param($left, $right, $menuWidth, $leftPadding)
     $innerWidth = $menuWidth - 4
     $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-   
+  
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
-   
+  
     $leftPadded = $leftText.PadRight($half)
     if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-   
+  
     $rightPadded = $rightText.PadRight($half)
     if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-    
+   
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor White
     Write-Host $rightPadded -NoNewline -ForegroundColor White
@@ -71,30 +90,30 @@ function Draw-Section {
     param($left, $right, $menuWidth, $leftPadding)
     $innerWidth = $menuWidth - 4
     $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-   
+  
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
     $leftPadded = $leftText.PadRight($half)
     if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-   
+  
     $rightPadded = $rightText.PadRight($half)
     if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-    
+   
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor Yellow
     Write-Host $rightPadded -NoNewline -ForegroundColor Yellow
     Write-Host " |" -ForegroundColor DarkGray
 }
 
-# ===== MENU (Phiên bản 2 cột gọn gàng) =====
+# ===== MENU =====
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 90
+    $menuWidth = 112                    # Tăng để phù hợp menu mới
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
-
+    
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-
+    
     # System Cleanup & Repair
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
@@ -122,11 +141,11 @@ function Show-Menu {
     # Windows Update + Security
     Draw-Section "Windows Update Control" "Security Control" $menuWidth $leftPadding
     Draw-Line "[41] Disable Win Update" "[51] Disable Defender" $menuWidth $leftPadding
-    Draw-Line "[42] Enable Win Update"  "[52] Enable Defender"  $menuWidth $leftPadding
+    Draw-Line "[42] Enable Win Update" "[52] Enable Defender" $menuWidth $leftPadding
     Draw-Line "" "[53] Disable Virus Prot." $menuWidth $leftPadding
-    Draw-Line "" "[54] Enable Virus Prot."  $menuWidth $leftPadding
-    Draw-Line "" "[55] Enable Firewall"    $menuWidth $leftPadding
-    Draw-Line "" "[56] Disable Firewall"   $menuWidth $leftPadding
+    Draw-Line "" "[54] Enable Virus Prot." $menuWidth $leftPadding
+    Draw-Line "" "[55] Enable Firewall" $menuWidth $leftPadding
+    Draw-Line "" "[56] Disable Firewall" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # Gaming Tools
@@ -183,7 +202,7 @@ while ($true) {
     Show-Menu
     Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
     $choice = Read-Host
-    
+   
     try {
         switch ($choice) {
             # SYSTEM CLEANUP
@@ -194,20 +213,20 @@ while ($true) {
             "5" { Clean-WindowsLogs }
             "6" { Clean-RAMCache }
             "7" { Clean-SystemRestoreShadows }
-           
+          
             # REPAIR
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
             "14" { Create-RestorePoint }
             "15" { Restore-ComputerPoint }
-           
+          
             # NETWORK
             "21" { Flush-DNS }
             "22" { Network-Reset }
             "23" { Renew-IP }
             "24" { Ping-Test }
-           
+          
             # QUICK TOOLS
             "31" { Open-TaskManager }
             "32" { Open-ControlPanel }
@@ -218,7 +237,7 @@ while ($true) {
             "37" { Open-StartupApps }
             "38" { Open-SystemInfo }
             "39" { Show-SystemInfoGUI }
-           
+          
             # WINDOWS CONTROL
             "41" { Disable-WindowsUpdate }
             "42" { Enable-WindowsUpdate }
@@ -228,7 +247,7 @@ while ($true) {
             "54" { Set-RealTimeProtection -Status "Enable" }
             "55" { Set-Firewall -Status "Enable" }
             "56" { Set-Firewall -Status "Disable" }
-           
+          
             # GAMING TOOLS
             "61" { Disable-GameBar }
             "62" { Enable-GameBar }
@@ -238,7 +257,7 @@ while ($true) {
             "66" { Set-Balanced }
             "67" { Disable-CoreIsolation }
             "68" { Enable-CoreIsolation }
-           
+          
             # INSTALL TOOLS
             "71" { Install-Chrome }
             "72" { Install-Edge }
@@ -248,7 +267,7 @@ while ($true) {
             "76" { Install-CrystalDiskInfo }
             "77" { Install-HWMonitor }
             "78" { Install-Office }
-           
+          
             # UNINSTALL TOOLS
             "81" { Uninstall-Chrome }
             "82" { Uninstall-Edge }
@@ -258,7 +277,7 @@ while ($true) {
             "86" { Uninstall-CrystalDiskInfo }
             "87" { Uninstall-HWMonitor }
             "88" { Uninstall-Office }
-           
+          
             "99" { Show-Readme }
             "0" {
                 $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
