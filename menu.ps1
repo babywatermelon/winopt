@@ -142,6 +142,18 @@ function Show-Menu {
     Draw-Line "[78] Office 365"            "[88] Remove Office"             $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    # GAMING TOOLS SECTION
+    Draw-Section "Gaming Tools" "" $menuWidth $leftPadding
+    Draw-Line "[61] Disable Game Bar" "" $menuWidth $leftPadding
+    Draw-Line "[62] Enable Game Bar" "" $menuWidth $leftPadding
+    Draw-Line "[63] Disable Game Mode" "" $menuWidth $leftPadding
+    Draw-Line "[64] Enable Game Mode" "" $menuWidth $leftPadding
+    Draw-Line "[65] Set High Performance" "" $menuWidth $leftPadding
+    Draw-Line "[66] Set Balanced (Default)" "" $menuWidth $leftPadding
+    Draw-Line "[67] Disable Core Isolation" "" $menuWidth $leftPadding
+    Draw-Line "[68] Enable Core Isolation" "" $menuWidth $leftPadding
+    Draw-Line "" "" $menuWidth $leftPadding
+    
     # Help & Exit
     Draw-Line "[99] README / Help"        ""                               $menuWidth $leftPadding
     Draw-Line "[0]  Exit"                 ""                               $menuWidth $leftPadding
@@ -217,6 +229,16 @@ while ($true) {
             "54" { Set-RealTimeProtection -Status "Enable" }
             "55" { Set-Firewall -Status "Enable" }
             "56" { Set-Firewall -Status "Disable" }
+
+                        # GAMING TOOLS
+            "61" { Disable-GameBar }
+            "62" { Enable-GameBar }
+            "63" { Disable-GameMode }
+            "64" { Enable-GameMode }
+            "65" { Set-HighPerformance }
+            "66" { Set-Balanced }
+            "67" { Disable-CoreIsolation }
+            "68" { Enable-CoreIsolation }
             
             # INSTALL TOOLS
             "71" { Install-Chrome }
