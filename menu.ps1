@@ -141,8 +141,8 @@ function Show-Menu {
 
     # ================== WINDOWS UPDATE CONTROL (ĐÃ CẬP NHẬT) ==================
     Draw-Section "Windows Update Control (MẠNH)" "Security Control" $menuWidth $leftPadding
-    Draw-Line "[41] Disable Win Update (CỰC MẠNH)" "[51] Disable Defender" $menuWidth $leftPadding
-    Draw-Line "[42] Enable Win Update (Full)"      "[52] Enable Defender" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" $menuWidth $leftPadding
+    Draw-Line "[42] Enable Win Update"      "[52] Enable Defender" $menuWidth $leftPadding
     Draw-Line "[43] Check Update Status"           "[53] Disable Virus Prot." $menuWidth $leftPadding
     Draw-Line ""                                   "[54] Enable Virus Prot." $menuWidth $leftPadding
     Draw-Line ""                                   "[55] Enable Firewall" $menuWidth $leftPadding
@@ -240,8 +240,14 @@ while ($true) {
             "39" { Show-SystemInfoGUI }
           
             # WINDOWS CONTROL
+            # WINDOWS UPDATE CONTROL (CỰC MẠNH)
             "41" { Disable-WindowsUpdate }
             "42" { Enable-WindowsUpdate }
+            "43" { 
+                Clear-Host
+                Get-WindowsUpdateStatus 
+                Pause 
+            }
             "51" { Set-Defender -Status "Disable" }
             "52" { Set-Defender -Status "Enable" }
             "53" { Set-RealTimeProtection -Status "Disable" }
