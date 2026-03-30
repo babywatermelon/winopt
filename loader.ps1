@@ -4,12 +4,17 @@ Write-Host "Loading WinOpt Tool..." -ForegroundColor Cyan
 $base = "$env:TEMP\winopt"
 $modules = "$base\modules"
 
-if (Test-Path $base) { Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue }
+# Xóa thư mục cũ
+if (Test-Path $base) { 
+    Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue 
+}
+
 New-Item -ItemType Directory -Path $modules -Force | Out-Null
 
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
-# Download các module khác (trừ windowsupdate)
+Write-Host "Downloading modules from GitHub..." -ForegroundColor DarkGray
+
 $moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming")
 
 foreach ($m in $moduleList) {
@@ -19,13 +24,13 @@ foreach ($m in $moduleList) {
         Invoke-WebRequest $url -OutFile $out -UseBasicParsing
         Write-Host "✅ Downloaded: $m.ps1" -ForegroundColor Green
     } catch {
-        Write-Host "❌ Error: $m.ps1" -ForegroundColor Red
+        Write-Host "❌ Error downloading $m.ps1" -ForegroundColor Red
     }
 }
 
+# Tạo windowsupdate.ps1 đầy đủ (đã fix syntax)
 Write-Host "Creating windowsupdate.ps1 (Full & Fixed)..." -ForegroundColor Magenta
 
-# ================== WINDOWS UPDATE MODULE HOÀN CHỈNH ==================
 $wuContent = @'
 # =============================================
 # WinOpt - WINDOWS UPDATE CONTROL (CỰC MẠNH)
@@ -148,8 +153,67 @@ function Enable-WindowsUpdate {
 '@
 
 $wuContent | Out-File -FilePath "$modules\windowsupdate.ps1" -Encoding UTF8
-
 Write-Host "✅ windowsupdate.ps1 đã được tạo đầy đủ" -ForegroundColor Green
-Write-Host "Starting WinOpt..." -ForegroundColor Cyan
+
+# ================== TẠO MENU.PS1 (Phần quan trọng nhất) ==================
+Write-Host "Creating menu.ps1 ..." -ForegroundColor Magenta
+
+# Dán toàn bộ menu code đã sửa của anh vào đây
+$menuContent = @'
+$host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
+
+# Tự động resize cửa sổ
+try {
+    $rawUI = $Host.UI.RawUI
+    $buffer = $rawUI.BufferSize
+    $buffer.Width = 200
+    $buffer.Height = 5000
+    $rawUI.BufferSize = $buffer
+
+    $desiredWidth = 120
+    $desiredHeight = 55
+    $maxSize = $rawUI.MaxPhysicalWindowSize
+    if ($desiredWidth -gt $maxSize.Width) { $desiredWidth = $maxSize.Width }
+    if ($desiredHeight -gt $maxSize.Height) { $desiredHeight = $maxSize.Height - 3 }
+    $windowSize = New-Object System.Management.Automation.Host.Size($desiredWidth, $desiredHeight)
+    $rawUI.WindowSize = $windowSize
+} catch {}
+
+# Load modules
+$modulesPath = "$env:TEMP\winopt\modules"
+Get-ChildItem "$modulesPath\*.ps1" | ForEach-Object {
+    try { . $_.FullName; Write-Host "Loaded: $($_.Name)" -ForegroundColor Gray }
+    catch { Write-Host "Error loading $($_.Name)" -ForegroundColor Red }
+}
+
+# UI Functions (Header, Draw-Line, Draw-Section, Pause...) 
+# ... (Anh dán toàn bộ phần UI và Show-Menu từ code cũ của anh vào đây)
+
+# MAIN LOOP
+while ($true) {
+    Show-Menu
+    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
+    $choice = Read-Host
+
+    switch ($choice) {
+        "41" { Disable-WindowsUpdate }
+        "42" { Enable-WindowsUpdate }
+        "43" { Clear-Host; Get-WindowsUpdateStatus; Pause }
+        "0" { 
+            if ((Read-Host "Exit? (Y/N)").ToUpper() -eq "Y") { exit }
+        }
+        default { 
+            # Các option khác của anh
+            Write-Host "Chức năng đang phát triển..." -ForegroundColor Yellow
+        }
+    }
+    Pause
+}
+'@
+
+$menuContent | Out-File -FilePath "$base\menu.ps1" -Encoding UTF8
+
+Write-Host "✅ menu.ps1 đã được tạo" -ForegroundColor Green
+Write-Host "Starting WinOpt Tool..." -ForegroundColor Cyan
 
 powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
