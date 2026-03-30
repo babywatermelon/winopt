@@ -19,7 +19,7 @@ try {
 }
 catch { }
 
-# ===== LOAD MODULES (ĐÃ CẢI TIẾN + DEBUG RÕ) =====
+# ===== LOAD MODULES =====
 $base = "$env:TEMP\winopt"
 $modulePath = Join-Path $base "modules"
 
@@ -37,10 +37,6 @@ if (Test-Path $modulePath) {
                 . $module.FullName
                 $color = if ($module.Name -like "*update*") { "Magenta" } else { "Green" }
                 Write-Host "✅ Loaded module: $($module.Name)" -ForegroundColor $color
-                
-                if ($module.Name -eq "windowsupdate.ps1") {
-                    Write-Host "   → Windows Update module đã load thành công!" -ForegroundColor Cyan
-                }
             }
             catch {
                 Write-Host "❌ LỖI load $($module.Name): $($_.Exception.Message)" -ForegroundColor Red
@@ -111,7 +107,7 @@ function Draw-Section {
     Write-Host " |" -ForegroundColor DarkGray
 }
 
-# ===== MENU =====
+# ===== SHOW-MENU =====
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
@@ -142,7 +138,6 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Windows Update Control
     Draw-Section "Windows Update Control (MẠNH)" "Security Control" $menuWidth $leftPadding
     Draw-Line "[41] Disable Win Update (Cực mạnh)" "[51] Disable Defender" $menuWidth $leftPadding
     Draw-Line "[42] Enable Win Update" "[52] Enable Defender" $menuWidth $leftPadding
@@ -176,7 +171,6 @@ function Show-Menu {
 
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
-
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
     Write-Host ""
 }
@@ -203,7 +197,7 @@ while ($true) {
     Show-Menu
     Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
     $choice = Read-Host
-  
+
     try {
         switch ($choice) {
             "1" { Clean-Temp }
@@ -213,18 +207,18 @@ while ($true) {
             "5" { Clean-WindowsLogs }
             "6" { Clean-RAMCache }
             "7" { Clean-SystemRestoreShadows }
-         
+
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
             "14" { Create-RestorePoint }
             "15" { Restore-ComputerPoint }
-         
+
             "21" { Flush-DNS }
             "22" { Network-Reset }
             "23" { Renew-IP }
             "24" { Ping-Test }
-         
+
             "31" { Open-TaskManager }
             "32" { Open-ControlPanel }
             "33" { Open-DeviceManager }
@@ -234,15 +228,10 @@ while ($true) {
             "37" { Open-StartupApps }
             "38" { Open-SystemInfo }
             "39" { Show-SystemInfoGUI }
-         
-            # WINDOWS UPDATE
+
             "41" { Disable-WindowsUpdate }
             "42" { Enable-WindowsUpdate }
-            "43" { 
-                Clear-Host
-                Get-WindowsUpdateStatus 
-                Pause 
-            }
+            "43" { Clear-Host; Get-WindowsUpdateStatus; Pause }
 
             "51" { Set-Defender -Status "Disable" }
             "52" { Set-Defender -Status "Enable" }
@@ -250,7 +239,7 @@ while ($true) {
             "54" { Set-RealTimeProtection -Status "Enable" }
             "55" { Set-Firewall -Status "Enable" }
             "56" { Set-Firewall -Status "Disable" }
-         
+
             "61" { Disable-GameBar }
             "62" { Enable-GameBar }
             "63" { Disable-GameMode }
@@ -259,7 +248,7 @@ while ($true) {
             "66" { Set-Balanced }
             "67" { Disable-CoreIsolation }
             "68" { Enable-CoreIsolation }
-         
+
             "71" { Install-Chrome }
             "72" { Install-Edge }
             "73" { Install-Firefox }
@@ -268,7 +257,7 @@ while ($true) {
             "76" { Install-CrystalDiskInfo }
             "77" { Install-HWMonitor }
             "78" { Install-Office }
-         
+
             "81" { Uninstall-Chrome }
             "82" { Uninstall-Edge }
             "83" { Uninstall-Firefox }
@@ -277,7 +266,7 @@ while ($true) {
             "86" { Uninstall-CrystalDiskInfo }
             "87" { Uninstall-HWMonitor }
             "88" { Uninstall-Office }
-         
+
             "99" { Show-Readme }
             "0" {
                 $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
