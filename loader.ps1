@@ -4,69 +4,152 @@ Write-Host "Loading WinOpt Tool..." -ForegroundColor Cyan
 $base = "$env:TEMP\winopt"
 $modules = "$base\modules"
 
-# Xóa thư mục cũ
-if (Test-Path $base) {
-    Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue
-}
-
+if (Test-Path $base) { Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue }
 New-Item -ItemType Directory -Path $modules -Force | Out-Null
 
-Write-Host "Downloading modules from GitHub..." -ForegroundColor DarkGray
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
-$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "windowsupdate", "security", "gaming")
+# Download các module khác (trừ windowsupdate)
+$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming")
 
 foreach ($m in $moduleList) {
     $url = "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/$m.ps1"
     $out = "$modules\$m.ps1"
-    
     try {
-        Invoke-WebRequest $url -OutFile $out -UseBasicParsing -TimeoutSec 20
+        Invoke-WebRequest $url -OutFile $out -UseBasicParsing
         Write-Host "✅ Downloaded: $m.ps1" -ForegroundColor Green
-    }
-    catch {
-        Write-Host "❌ Error downloading $m.ps1" -ForegroundColor Red
+    } catch {
+        Write-Host "❌ Error: $m.ps1" -ForegroundColor Red
     }
 }
 
-# === FIX EXECUTION POLICY & LOAD MODULES ===
-Write-Host "`nSetting Execution Policy for this session..." -ForegroundColor Yellow
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+Write-Host "Creating windowsupdate.ps1 (Full & Fixed)..." -ForegroundColor Magenta
 
-Write-Host "`n=== KIỂM TRA WINDOWS UPDATE MODULE ===" -ForegroundColor Cyan
+# ================== WINDOWS UPDATE MODULE HOÀN CHỈNH ==================
+$wuContent = @'
+# =============================================
+# WinOpt - WINDOWS UPDATE CONTROL (CỰC MẠNH)
+# =============================================
 
-$updateFile = "$modules\windowsupdate.ps1"
+function Get-WindowsUpdateStatus {
+    Write-Host "`n" -NoNewline
+    Write-Host "═" * 80 -ForegroundColor DarkGray
+    Write-Host "               TRẠNG THÁI WINDOWS UPDATE HIỆN TẠI" -ForegroundColor Cyan
+    Write-Host "═" * 80 -ForegroundColor DarkGray
 
-if (Test-Path $updateFile) {
-    try {
-        . $updateFile
-        Write-Host "✅ windowsupdate.ps1 loaded successfully" -ForegroundColor Magenta
-
-        if (Get-Command Enable-WindowsUpdate -ErrorAction SilentlyContinue) {
-            Write-Host "   ✓ Enable-WindowsUpdate sẵn sàng" -ForegroundColor Green
-        } else {
-            Write-Host "   ✘ Enable-WindowsUpdate KHÔNG tồn tại (file bị cắt)" -ForegroundColor Red
+    $services = @('wuauserv', 'bits', 'WaaSMedicSvc', 'UsoSvc')
+    foreach ($svc in $services) {
+        $s = Get-Service -Name $svc -ErrorAction SilentlyContinue
+        if ($s) {
+            $color = if ($s.Status -eq 'Running') { 'Green' } else { 'Red' }
+            Write-Host "   Service $svc`t: $($s.Status) (Startup: $($s.StartType))" -ForegroundColor $color
         }
     }
-    catch {
-        Write-Host "❌ Lỗi load windowsupdate.ps1" -ForegroundColor Red
-        Write-Host "   $($_.Exception.Message)" -ForegroundColor Red
+
+    $key = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    $noAuto = (Get-ItemProperty -Path $key -Name "NoAutoUpdate" -ErrorAction SilentlyContinue).NoAutoUpdate
+    if ($noAuto -eq 1) {
+        Write-Host "   Registry NoAutoUpdate   : BỊ KHÓA" -ForegroundColor Red
+    } else {
+        Write-Host "   Registry NoAutoUpdate   : Hoạt động bình thường" -ForegroundColor Green
     }
-} else {
-    Write-Host "❌ Không tìm thấy windowsupdate.ps1" -ForegroundColor Red
+    Write-Host "═" * 80 -ForegroundColor DarkGray
 }
 
-Write-Host "=== DEBUG HOÀN TẤT ===`n" -ForegroundColor Cyan
+function Disable-WindowsUpdate {
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "❌ PHẢI CHẠY TOOL VỚI QUYỀN ADMINISTRATOR!" -ForegroundColor Red
+        return
+    }
 
-# Tạo file menu.ps1 thủ công (vì file trên GitHub có vấn đề)
-Write-Host "Creating menu.ps1 ..." -ForegroundColor DarkGray
+    Write-Host "`n🚫 ĐANG TẮT WINDOWS UPDATE CỰC MẠNH..." -ForegroundColor Red
+    Get-WindowsUpdateStatus
 
-$menuContent = @'
-# (Dán toàn bộ nội dung menu.ps1 đã sửa của anh vào đây - phần từ $host.UI.RawUI.WindowTitle đến hết vòng while)
+    $services = @('wuauserv', 'bits', 'WaaSMedicSvc', 'UsoSvc')
+    foreach ($svc in $services) {
+        if (Get-Service -Name $svc -ErrorAction SilentlyContinue) {
+            Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue
+            Set-Service -Name $svc -StartupType Disabled
+            Write-Host "   ✓ $svc → Disabled" -ForegroundColor DarkRed
+        }
+    }
+
+    $binaries = @{
+        "C:\Windows\System32\usoclient.exe"          = "usoclient.exe.disabled"
+        "C:\Windows\System32\UsoClientUxBroker.exe" = "UsoClientUxBroker.exe.disabled"
+        "C:\Windows\System32\WaaSMedicAgent.exe"    = "WaaSMedicAgent.exe.disabled"
+    }
+    foreach ($src in $binaries.Keys) {
+        $dst = Join-Path (Split-Path $src) $binaries[$src]
+        if (Test-Path $src) {
+            Rename-Item -Path $src -NewName $binaries[$src] -Force -ErrorAction SilentlyContinue
+            Write-Host "   ✓ Đổi tên $(Split-Path $src -Leaf) → .disabled" -ForegroundColor DarkRed
+        }
+    }
+
+    $regPaths = @("HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv","HKLM:\SYSTEM\CurrentControlSet\Services\bits","HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc","HKLM:\SYSTEM\CurrentControlSet\Services\UsoSvc")
+    foreach ($key in $regPaths) {
+        if (Test-Path $key) { icacls $key /deny "SYSTEM:(W)" /T | Out-Null }
+    }
+
+    $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    if (-not (Test-Path $AUPath)) { New-Item -Path $AUPath -Force | Out-Null }
+    Set-ItemProperty -Path $AUPath -Name "NoAutoUpdate" -Value 1 -Type DWord -Force
+    Set-ItemProperty -Path $AUPath -Name "AUOptions" -Value 1 -Type DWord -Force
+
+    Write-Host "`n✅ WINDOWS UPDATE ĐÃ TẮT HOÀN TOÀN!" -ForegroundColor Green
+    Get-WindowsUpdateStatus
+}
+
+function Enable-WindowsUpdate {
+    if (-not ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
+        Write-Host "❌ PHẢI CHẠY TOOL VỚI QUYỀN ADMINISTRATOR!" -ForegroundColor Red
+        return
+    }
+
+    Write-Host "`n✅ ĐANG BẬT LẠI WINDOWS UPDATE..." -ForegroundColor Green
+    Get-WindowsUpdateStatus
+
+    $regPaths = @("HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv","HKLM:\SYSTEM\CurrentControlSet\Services\bits","HKLM:\SYSTEM\CurrentControlSet\Services\WaaSMedicSvc","HKLM:\SYSTEM\CurrentControlSet\Services\UsoSvc")
+    foreach ($key in $regPaths) {
+        if (Test-Path $key) { icacls $key /remove:d "SYSTEM" /T | Out-Null }
+    }
+
+    $binaries = @{
+        "C:\Windows\System32\usoclient.exe.disabled"          = "usoclient.exe"
+        "C:\Windows\System32\UsoClientUxBroker.exe.disabled" = "UsoClientUxBroker.exe"
+        "C:\Windows\System32\WaaSMedicAgent.exe.disabled"    = "WaaSMedicAgent.exe"
+    }
+    foreach ($disabled in $binaries.Keys) {
+        $original = Join-Path (Split-Path $disabled) $binaries[$disabled]
+        if (Test-Path $disabled) {
+            Rename-Item -Path $disabled -NewName $binaries[$disabled] -Force -ErrorAction SilentlyContinue
+            Write-Host "   ✓ Khôi phục $(Split-Path $original -Leaf)" -ForegroundColor Green
+        }
+    }
+
+    $services = @('wuauserv', 'bits', 'WaaSMedicSvc', 'UsoSvc')
+    foreach ($svc in $services) {
+        if (Get-Service -Name $svc -ErrorAction SilentlyContinue) {
+            Set-Service -Name $svc -StartupType Manual
+            Start-Service -Name $svc -ErrorAction SilentlyContinue
+        }
+    }
+
+    $AUPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    if (Test-Path $AUPath) {
+        Remove-ItemProperty -Path $AUPath -Name "NoAutoUpdate" -ErrorAction SilentlyContinue
+        Remove-ItemProperty -Path $AUPath -Name "AUOptions" -ErrorAction SilentlyContinue
+    }
+
+    Write-Host "`n✅ WINDOWS UPDATE ĐÃ BẬT LẠI HOÀN TOÀN!" -ForegroundColor Green
+    Get-WindowsUpdateStatus
+}
 '@
 
-$menuContent | Out-File -FilePath "$base\menu.ps1" -Encoding UTF8
+$wuContent | Out-File -FilePath "$modules\windowsupdate.ps1" -Encoding UTF8
 
-Write-Host "Starting WinOpt..." -ForegroundColor Green
+Write-Host "✅ windowsupdate.ps1 đã được tạo đầy đủ" -ForegroundColor Green
+Write-Host "Starting WinOpt..." -ForegroundColor Cyan
 
-# Chạy menu
 powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
