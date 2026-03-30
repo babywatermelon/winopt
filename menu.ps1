@@ -138,12 +138,11 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # ================== SECURITY & GAMING TOOLS (ĐÃ GỘP) ==================
     Draw-Section "Security" "Gaming Tools" "" $menuWidth $leftPadding
     Draw-Line "[51] Disable Defender" "[61] Disable Game Bar" $menuWidth $leftPadding
     Draw-Line "[52] Enable Defender" "[62] Enable Game Bar" $menuWidth $leftPadding
-    Draw-Line "[53] Disable Virus Prot." "[63] Disable Game Mode" $menuWidth $leftPadding
-    Draw-Line "[54] Enable Virus Prot." "[64] Enable Game Mode" $menuWidth $leftPadding
+    Draw-Line "[53] Disable Virus Prot" "[63] Disable Game Mode" $menuWidth $leftPadding
+    Draw-Line "[54] Enable Virus Prot" "[64] Enable Game Mode" $menuWidth $leftPadding
     Draw-Line "[55] Enable Firewall" "[65] High Performance" $menuWidth $leftPadding
     Draw-Line "[56] Disable Firewall" "[66] Balanced (Default)" $menuWidth $leftPadding
     Draw-Line "" "[67] Disable Core Isolation" $menuWidth $leftPadding
