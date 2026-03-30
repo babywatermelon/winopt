@@ -106,14 +106,15 @@ function Draw-Section {
 }
 
 # ===== MENU =====
+# ===== MENU =====
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 112                    # Tăng để phù hợp menu mới
+    $menuWidth = 120   # Tăng nhẹ để menu cân đối hơn
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
-    
+   
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-    
+   
     # System Cleanup & Repair
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
@@ -138,14 +139,14 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Windows Update + Security
-    Draw-Section "Windows Update Control" "Security Control" $menuWidth $leftPadding
-    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" $menuWidth $leftPadding
-    Draw-Line "[42] Enable Win Update" "[52] Enable Defender" $menuWidth $leftPadding
-    Draw-Line "" "[53] Disable Virus Prot." $menuWidth $leftPadding
-    Draw-Line "" "[54] Enable Virus Prot." $menuWidth $leftPadding
-    Draw-Line "" "[55] Enable Firewall" $menuWidth $leftPadding
-    Draw-Line "" "[56] Disable Firewall" $menuWidth $leftPadding
+    # ================== WINDOWS UPDATE CONTROL (ĐÃ CẬP NHẬT) ==================
+    Draw-Section "Windows Update Control (MẠNH)" "Security Control" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Win Update (CỰC MẠNH)" "[51] Disable Defender" $menuWidth $leftPadding
+    Draw-Line "[42] Enable Win Update (Full)"      "[52] Enable Defender" $menuWidth $leftPadding
+    Draw-Line "[43] Check Update Status"           "[53] Disable Virus Prot." $menuWidth $leftPadding
+    Draw-Line ""                                   "[54] Enable Virus Prot." $menuWidth $leftPadding
+    Draw-Line ""                                   "[55] Enable Firewall" $menuWidth $leftPadding
+    Draw-Line ""                                   "[56] Disable Firewall" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
     # Gaming Tools
