@@ -15,7 +15,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 Write-Host "Downloading modules from GitHub..." -ForegroundColor DarkGray
 
-$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming", "extension, windowsupdate")
+$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming")
 
 foreach ($m in $moduleList) {
     $url = "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/$m.ps1"
