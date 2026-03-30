@@ -9,6 +9,7 @@ if (Test-Path $base) {
     Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue
 }
 
+# Tạo thư mục
 New-Item -ItemType Directory -Path $modules -Force | Out-Null
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
@@ -27,42 +28,26 @@ foreach ($m in $moduleList) {
     }
 }
 
-# Tạo windowsupdate.ps1 (Full)
-Write-Host "Creating windowsupdate.ps1 (Full & Fixed)..." -ForegroundColor Magenta
+Write-Host "✅ All modules downloaded successfully" -ForegroundColor Green
 
-$wuContent = @'
-function Get-WindowsUpdateStatus {
-    # Dán đầy đủ code Get-WindowsUpdateStatus của bạn vào đây
-    Write-Host "`n" -NoNewline
-    Write-Host "═" * 80 -ForegroundColor DarkGray
-    Write-Host " TRẠNG THÁI WINDOWS UPDATE HIỆN TẠI" -ForegroundColor Cyan
-    Write-Host "═" * 80 -ForegroundColor DarkGray
-    $services = @('wuauserv', 'bits', 'WaaSMedicSvc', 'UsoSvc')
-    foreach ($svc in $services) {
-        $s = Get-Service -Name $svc -ErrorAction SilentlyContinue
-        if ($s) {
-            $color = if ($s.Status -eq 'Running') { 'Green' } else { 'Red' }
-            Write-Host " Service $svc`t: $($s.Status) (Startup: $($s.StartType))" -ForegroundColor $color
-        }
-    }
-    $key = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
-    $noAuto = (Get-ItemProperty -Path $key -Name "NoAutoUpdate" -ErrorAction SilentlyContinue).NoAutoUpdate
-    if ($noAuto -eq 1) {
-        Write-Host " Registry NoAutoUpdate : BỊ KHÓA" -ForegroundColor Red
-    } else {
-        Write-Host " Registry NoAutoUpdate : Hoạt động bình thường" -ForegroundColor Green
-    }
-    Write-Host "═" * 80 -ForegroundColor DarkGray
+# Tải menu.ps1 từ GitHub (không tạo thủ công nữa)
+Write-Host "Downloading menu.ps1 from GitHub..." -ForegroundColor Cyan
+
+$menuUrl = "https://raw.githubusercontent.com/babywatermelon/winopt/main/menu.ps1"
+$menuPath = "$base\menu.ps1"
+
+try {
+    Invoke-WebRequest $menuUrl -OutFile $menuPath -UseBasicParsing
+    Write-Host "✅ Menu.ps1 downloaded successfully" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Failed to download menu.ps1" -ForegroundColor Red
+    Write-Host "Please make sure menu.ps1 exists on your GitHub repository." -ForegroundColor Yellow
+    Pause
+    exit
 }
 
-function Disable-WindowsUpdate { ... }   # Dán đầy đủ function Disable
-function Enable-WindowsUpdate { ... }    # Dán đầy đủ function Enable
-'@   # ← Bạn thay phần ... bằng code thực của 3 function
-
-$wuContent | Out-File -FilePath "$modules\windowsupdate.ps1" -Encoding UTF8
-
-Write-Host "✅ windowsupdate.ps1 đã tạo" -ForegroundColor Green
 Write-Host "Starting WinOpt Tool..." -ForegroundColor Cyan
+Write-Host "========================================" -ForegroundColor DarkGray
 
-# Chạy trực tiếp menu.ps1 (không ghi đè nữa)
-powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
+# Chạy menu
+powershell -ExecutionPolicy Bypass -File $menuPath
