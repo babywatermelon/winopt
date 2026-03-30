@@ -229,10 +229,6 @@ while ($true) {
             "38" { Open-SystemInfo }
             "39" { Show-SystemInfoGUI }
 
-            "41" { Disable-WindowsUpdate }
-            "42" { Enable-WindowsUpdate }
-            "43" { Clear-Host; Get-WindowsUpdateStatus; Pause }
-
             "51" { Set-Defender -Status "Disable" }
             "52" { Set-Defender -Status "Enable" }
             "53" { Set-RealTimeProtection -Status "Disable" }
