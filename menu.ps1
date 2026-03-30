@@ -1,52 +1,58 @@
 $host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
 
-# ===== TỰ ĐỘNG CĂN CHỈNH KÍCH THƯỚC CỬA SỔ (CẢI TIẾN) =====
+# ===== TỰ ĐỘNG CĂN CHỈNH KÍCH THƯỚC CỬA SỔ =====
 try {
     $rawUI = $Host.UI.RawUI
-
-    # Thiết lập BufferSize lớn trước để tránh lỗi cắt ngang
     $buffer = $rawUI.BufferSize
     $buffer.Width = 200
     $buffer.Height = 5000
     $rawUI.BufferSize = $buffer
 
-    # Kích thước cửa sổ phù hợp với menu hiện tại
-    $desiredWidth = 118      # Rộng hơn để hiển thị tốt 2 cột
-    $desiredHeight = 52      # Cao đủ để hiển thị hết menu + khoảng trống
-
-    # Không vượt quá kích thước tối đa của màn hình console
+    $desiredWidth = 120
+    $desiredHeight = 52
     $maxSize = $rawUI.MaxPhysicalWindowSize
-    if ($desiredWidth -gt $maxSize.Width)  { $desiredWidth = $maxSize.Width }
+    if ($desiredWidth -gt $maxSize.Width) { $desiredWidth = $maxSize.Width }
     if ($desiredHeight -gt $maxSize.Height) { $desiredHeight = $maxSize.Height - 3 }
 
     $windowSize = New-Object System.Management.Automation.Host.Size($desiredWidth, $desiredHeight)
     $rawUI.WindowSize = $windowSize
-
-    Write-Host "Console da duoc tu dong resize de phu hop voi menu." -ForegroundColor DarkGray
 }
-catch {
-    # Bỏ qua nếu không resize được (chạy trong một số môi trường đặc biệt)
-}
+catch { }
 
-# ===== LOAD MODULES =====
+# ===== LOAD MODULES (ĐÃ CẢI TIẾN + DEBUG RÕ) =====
 $base = "$env:TEMP\winopt"
 $modulePath = Join-Path $base "modules"
 
+Write-Host "`n=== ĐANG LOAD MODULES ===" -ForegroundColor Cyan
+
 if (Test-Path $modulePath) {
     $modules = Get-ChildItem "$modulePath\*.ps1" -ErrorAction SilentlyContinue
-    foreach ($module in $modules) {
-        try {
-            . $module.FullName
-            Write-Host "Loaded module: $($module.Name)" -ForegroundColor Gray
-        }
-        catch {
-            Write-Host "Error loading module: $($module.Name)" -ForegroundColor Red
+    
+    if ($modules.Count -eq 0) {
+        Write-Host "❌ Không có file .ps1 nào trong thư mục modules!" -ForegroundColor Red
+    }
+    else {
+        foreach ($module in $modules) {
+            try {
+                . $module.FullName
+                $color = if ($module.Name -like "*update*") { "Magenta" } else { "Green" }
+                Write-Host "✅ Loaded module: $($module.Name)" -ForegroundColor $color
+                
+                if ($module.Name -eq "windowsupdate.ps1") {
+                    Write-Host "   → Windows Update module đã load thành công!" -ForegroundColor Cyan
+                }
+            }
+            catch {
+                Write-Host "❌ LỖI load $($module.Name): $($_.Exception.Message)" -ForegroundColor Red
+            }
         }
     }
 }
 else {
-    Write-Host "Modules folder not found: $modulePath" -ForegroundColor Yellow
+    Write-Host "❌ Không tìm thấy thư mục: $modulePath" -ForegroundColor Red
 }
+
+Write-Host "=== HOÀN TẤT LOAD MODULES ===`n" -ForegroundColor Cyan
 
 # ===== UI CORE =====
 function Pause {
@@ -70,16 +76,16 @@ function Draw-Line {
     param($left, $right, $menuWidth, $leftPadding)
     $innerWidth = $menuWidth - 4
     $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-  
+ 
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
-  
+ 
     $leftPadded = $leftText.PadRight($half)
     if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-  
+ 
     $rightPadded = $rightText.PadRight($half)
     if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-   
+  
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor White
     Write-Host $rightPadded -NoNewline -ForegroundColor White
@@ -90,15 +96,15 @@ function Draw-Section {
     param($left, $right, $menuWidth, $leftPadding)
     $innerWidth = $menuWidth - 4
     $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-  
+ 
     $leftText = ($left | Out-String).Trim()
     $rightText = ($right | Out-String).Trim()
     $leftPadded = $leftText.PadRight($half)
     if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-  
+ 
     $rightPadded = $rightText.PadRight($half)
     if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-   
+  
     Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
     Write-Host $leftPadded -NoNewline -ForegroundColor Yellow
     Write-Host $rightPadded -NoNewline -ForegroundColor Yellow
@@ -106,16 +112,14 @@ function Draw-Section {
 }
 
 # ===== MENU =====
-# ===== MENU =====
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 120   # Tăng nhẹ để menu cân đối hơn
+    $menuWidth = 120
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
    
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
    
-    # System Cleanup & Repair
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
     Draw-Line "[2] Clear Prefetch" "[12] DISM Repair" $menuWidth $leftPadding
@@ -126,7 +130,6 @@ function Show-Menu {
     Draw-Line "[7] Clear Restore Points" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Network & Quick Tools
     Draw-Section "Network Tools" "Windows Quick Tools" $menuWidth $leftPadding
     Draw-Line "[21] Flush DNS" "[31] Task Manager" $menuWidth $leftPadding
     Draw-Line "[22] Network Reset" "[32] Control Panel" $menuWidth $leftPadding
@@ -139,17 +142,16 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # ================== WINDOWS UPDATE CONTROL (ĐÃ CẬP NHẬT) ==================
+    # Windows Update Control
     Draw-Section "Windows Update Control (MẠNH)" "Security Control" $menuWidth $leftPadding
-    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" $menuWidth $leftPadding
-    Draw-Line "[42] Enable Win Update"      "[52] Enable Defender" $menuWidth $leftPadding
-    Draw-Line "[43] Check Update Status"           "[53] Disable Virus Prot." $menuWidth $leftPadding
-    Draw-Line ""                                   "[54] Enable Virus Prot." $menuWidth $leftPadding
-    Draw-Line ""                                   "[55] Enable Firewall" $menuWidth $leftPadding
-    Draw-Line ""                                   "[56] Disable Firewall" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Win Update (Cực mạnh)" "[51] Disable Defender" $menuWidth $leftPadding
+    Draw-Line "[42] Enable Win Update" "[52] Enable Defender" $menuWidth $leftPadding
+    Draw-Line "[43] Check Update Status" "[53] Disable Virus Prot." $menuWidth $leftPadding
+    Draw-Line "" "[54] Enable Virus Prot." $menuWidth $leftPadding
+    Draw-Line "" "[55] Enable Firewall" $menuWidth $leftPadding
+    Draw-Line "" "[56] Disable Firewall" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Gaming Tools
     Draw-Section "Gaming Tools" "" $menuWidth $leftPadding
     Draw-Line "[61] Disable Game Bar" "" $menuWidth $leftPadding
     Draw-Line "[62] Enable Game Bar" "" $menuWidth $leftPadding
@@ -161,7 +163,6 @@ function Show-Menu {
     Draw-Line "[68] Enable Core Isolation" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Install & Uninstall
     Draw-Section "Install Tools" "Uninstall Tools" $menuWidth $leftPadding
     Draw-Line "[71] Chrome" "[81] Remove Chrome" $menuWidth $leftPadding
     Draw-Line "[72] Edge" "[82] Remove Edge" $menuWidth $leftPadding
@@ -173,7 +174,6 @@ function Show-Menu {
     Draw-Line "[78] Office 365" "[88] Remove Office" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    # Help & Exit
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
 
@@ -188,8 +188,8 @@ function Show-Readme {
                     WINOPT TOOL
           Windows Optimization & Repair Toolkit
 ===========================================================
-WinOpt la cong cu toi uu va sua loi Windows.
-Nen chay bang quyen Administrator.
+WinOpt là công cụ tối ưu và sửa lỗi Windows.
+Nên chạy bằng quyền Administrator.
 DEVELOPED BY: Nguyen Minh Tri
 ===========================================================
 "@
@@ -203,10 +203,9 @@ while ($true) {
     Show-Menu
     Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
     $choice = Read-Host
-   
+  
     try {
         switch ($choice) {
-            # SYSTEM CLEANUP
             "1" { Clean-Temp }
             "2" { Clean-Prefetch }
             "3" { Clean-WindowsUpdate }
@@ -214,21 +213,18 @@ while ($true) {
             "5" { Clean-WindowsLogs }
             "6" { Clean-RAMCache }
             "7" { Clean-SystemRestoreShadows }
-          
-            # REPAIR
+         
             "11" { Repair-SFC }
             "12" { Repair-DISM }
             "13" { Repair-Full }
             "14" { Create-RestorePoint }
             "15" { Restore-ComputerPoint }
-          
-            # NETWORK
+         
             "21" { Flush-DNS }
             "22" { Network-Reset }
             "23" { Renew-IP }
             "24" { Ping-Test }
-          
-            # QUICK TOOLS
+         
             "31" { Open-TaskManager }
             "32" { Open-ControlPanel }
             "33" { Open-DeviceManager }
@@ -238,9 +234,8 @@ while ($true) {
             "37" { Open-StartupApps }
             "38" { Open-SystemInfo }
             "39" { Show-SystemInfoGUI }
-          
-            # WINDOWS CONTROL
-            # WINDOWS UPDATE CONTROL (CỰC MẠNH)
+         
+            # WINDOWS UPDATE
             "41" { Disable-WindowsUpdate }
             "42" { Enable-WindowsUpdate }
             "43" { 
@@ -248,14 +243,14 @@ while ($true) {
                 Get-WindowsUpdateStatus 
                 Pause 
             }
+
             "51" { Set-Defender -Status "Disable" }
             "52" { Set-Defender -Status "Enable" }
             "53" { Set-RealTimeProtection -Status "Disable" }
             "54" { Set-RealTimeProtection -Status "Enable" }
             "55" { Set-Firewall -Status "Enable" }
             "56" { Set-Firewall -Status "Disable" }
-          
-            # GAMING TOOLS
+         
             "61" { Disable-GameBar }
             "62" { Enable-GameBar }
             "63" { Disable-GameMode }
@@ -264,8 +259,7 @@ while ($true) {
             "66" { Set-Balanced }
             "67" { Disable-CoreIsolation }
             "68" { Enable-CoreIsolation }
-          
-            # INSTALL TOOLS
+         
             "71" { Install-Chrome }
             "72" { Install-Edge }
             "73" { Install-Firefox }
@@ -274,8 +268,7 @@ while ($true) {
             "76" { Install-CrystalDiskInfo }
             "77" { Install-HWMonitor }
             "78" { Install-Office }
-          
-            # UNINSTALL TOOLS
+         
             "81" { Uninstall-Chrome }
             "82" { Uninstall-Edge }
             "83" { Uninstall-Firefox }
@@ -284,11 +277,11 @@ while ($true) {
             "86" { Uninstall-CrystalDiskInfo }
             "87" { Uninstall-HWMonitor }
             "88" { Uninstall-Office }
-          
+         
             "99" { Show-Readme }
             "0" {
                 $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
-                if ($confirm -match "y") { exit }
+                if ($confirm -match "^y") { exit }
             }
             default { Write-Host "Invalid option!" -ForegroundColor Red }
         }
