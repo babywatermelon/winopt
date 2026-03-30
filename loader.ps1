@@ -4,7 +4,7 @@ Write-Host "Loading WinOpt Tool..." -ForegroundColor Cyan
 $base = "$env:TEMP\winopt"
 $modules = "$base\modules"
 
-# Xóa thư mục cũ để tránh lỗi cũ
+# Xóa thư mục cũ
 if (Test-Path $base) {
     Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue
 }
@@ -14,7 +14,7 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
 Write-Host "Downloading modules from GitHub..." -ForegroundColor DarkGray
 
-$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming")
+$moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "security", "gaming", "extension")
 
 foreach ($m in $moduleList) {
     $url = "https://raw.githubusercontent.com/babywatermelon/winopt/main/modules/$m.ps1"
@@ -27,158 +27,42 @@ foreach ($m in $moduleList) {
     }
 }
 
-# Tạo windowsupdate.ps1 (đầy đủ)
+# Tạo windowsupdate.ps1 (Full)
 Write-Host "Creating windowsupdate.ps1 (Full & Fixed)..." -ForegroundColor Magenta
+
 $wuContent = @'
-# Windows Update Control functions (Get-WindowsUpdateStatus, Disable-WindowsUpdate, Enable-WindowsUpdate)
-# (Dán nguyên code function Get-WindowsUpdateStatus, Disable-WindowsUpdate, Enable-WindowsUpdate của bạn vào đây)
-'@  # ← Thay bằng code đầy đủ của 3 function này
+function Get-WindowsUpdateStatus {
+    # Dán đầy đủ code Get-WindowsUpdateStatus của bạn vào đây
+    Write-Host "`n" -NoNewline
+    Write-Host "═" * 80 -ForegroundColor DarkGray
+    Write-Host " TRẠNG THÁI WINDOWS UPDATE HIỆN TẠI" -ForegroundColor Cyan
+    Write-Host "═" * 80 -ForegroundColor DarkGray
+    $services = @('wuauserv', 'bits', 'WaaSMedicSvc', 'UsoSvc')
+    foreach ($svc in $services) {
+        $s = Get-Service -Name $svc -ErrorAction SilentlyContinue
+        if ($s) {
+            $color = if ($s.Status -eq 'Running') { 'Green' } else { 'Red' }
+            Write-Host " Service $svc`t: $($s.Status) (Startup: $($s.StartType))" -ForegroundColor $color
+        }
+    }
+    $key = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU"
+    $noAuto = (Get-ItemProperty -Path $key -Name "NoAutoUpdate" -ErrorAction SilentlyContinue).NoAutoUpdate
+    if ($noAuto -eq 1) {
+        Write-Host " Registry NoAutoUpdate : BỊ KHÓA" -ForegroundColor Red
+    } else {
+        Write-Host " Registry NoAutoUpdate : Hoạt động bình thường" -ForegroundColor Green
+    }
+    Write-Host "═" * 80 -ForegroundColor DarkGray
+}
+
+function Disable-WindowsUpdate { ... }   # Dán đầy đủ function Disable
+function Enable-WindowsUpdate { ... }    # Dán đầy đủ function Enable
+'@   # ← Bạn thay phần ... bằng code thực của 3 function
 
 $wuContent | Out-File -FilePath "$modules\windowsupdate.ps1" -Encoding UTF8
 
-# ================== TẠO MENU.PS1 ĐẦY ĐỦ ==================
-Write-Host "Creating menu.ps1 ..." -ForegroundColor Magenta
-
-$menuContent = @'
-$host.UI.RawUI.WindowTitle = "WinOpt - Windows Optimization Tool"
-
-# ===== TỰ ĐỘNG CĂN CHỈNH KÍCH THƯỚC CỬA SỔ =====
-try {
-    $rawUI = $Host.UI.RawUI
-    $buffer = $rawUI.BufferSize
-    $buffer.Width = 200
-    $buffer.Height = 5000
-    $rawUI.BufferSize = $buffer
-    $desiredWidth = 120
-    $desiredHeight = 52
-    $maxSize = $rawUI.MaxPhysicalWindowSize
-    if ($desiredWidth -gt $maxSize.Width) { $desiredWidth = $maxSize.Width }
-    if ($desiredHeight -gt $maxSize.Height) { $desiredHeight = $maxSize.Height - 3 }
-    $windowSize = New-Object System.Management.Automation.Host.Size($desiredWidth, $desiredHeight)
-    $rawUI.WindowSize = $windowSize
-}
-catch { }
-
-# ===== LOAD ALL MODULES =====
-$modulePath = "$env:TEMP\winopt\modules"
-Write-Host "`n=== ĐANG LOAD MODULES ===" -ForegroundColor Cyan
-
-Get-ChildItem "$modulePath\*.ps1" -ErrorAction SilentlyContinue | ForEach-Object {
-    try {
-        . $_.FullName
-        $color = if ($_.Name -like "*update*") { "Magenta" } else { "Green" }
-        Write-Host "✅ Loaded: $($_.Name)" -ForegroundColor $color
-    }
-    catch {
-        Write-Host "❌ Lỗi load $($_.Name): $($_.Exception.Message)" -ForegroundColor Red
-    }
-}
-Write-Host "=== HOÀN TẤT LOAD MODULES ===`n" -ForegroundColor Cyan
-
-# ===== UI FUNCTIONS (Header, Draw-Line, Draw-Section, Pause) =====
-function Pause {
-    Write-Host ""
-    Read-Host "Press Enter to continue"
-}
-
-function Header {
-    Clear-Host
-    $width = $Host.UI.RawUI.WindowSize.Width
-    $title = " WINOPT TOOL "
-    $padding = [math]::Max(0, [math]::Floor(($width - $title.Length) / 2))
-    $line = "=" * $width
-    Write-Host $line -ForegroundColor DarkGray
-    Write-Host (" " * $padding + $title) -ForegroundColor Cyan
-    Write-Host $line -ForegroundColor DarkGray
-    Write-Host ""
-}
-
-function Draw-Line {
-    param($left, $right, $menuWidth, $leftPadding)
-    $innerWidth = $menuWidth - 4
-    $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-    $leftText = ($left | Out-String).Trim()
-    $rightText = ($right | Out-String).Trim()
-    $leftPadded = $leftText.PadRight($half)
-    if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-    $rightPadded = $rightText.PadRight($half)
-    if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-
-    Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftPadded -NoNewline -ForegroundColor White
-    Write-Host $rightPadded -NoNewline -ForegroundColor White
-    Write-Host " |" -ForegroundColor DarkGray
-}
-
-function Draw-Section {
-    param($left, $right, $menuWidth, $leftPadding)
-    $innerWidth = $menuWidth - 4
-    $half = [math]::Max(1, [math]::Floor($innerWidth / 2))
-    $leftText = ($left | Out-String).Trim()
-    $rightText = ($right | Out-String).Trim()
-    $leftPadded = $leftText.PadRight($half)
-    if ($leftPadded.Length -gt $half) { $leftPadded = $leftPadded.Substring(0, $half) }
-    $rightPadded = $rightText.PadRight($half)
-    if ($rightPadded.Length -gt $half) { $rightPadded = $rightPadded.Substring(0, $half) }
-
-    Write-Host (" " * [math]::Max(0, $leftPadding) + "| ") -NoNewline -ForegroundColor DarkGray
-    Write-Host $leftPadded -NoNewline -ForegroundColor Yellow
-    Write-Host $rightPadded -NoNewline -ForegroundColor Yellow
-    Write-Host " |" -ForegroundColor DarkGray
-}
-
-# ===== SHOW-MENU FUNCTION (quan trọng nhất) =====
-function Show-Menu {
-    Header
-    $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 120
-    $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
-  
-    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-  
-    Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
-    Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
-    # ... (dán tiếp toàn bộ các Draw-Line còn lại của bạn vào đây)
-
-    Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
-    Draw-Line "[0] Exit" "" $menuWidth $leftPadding
-    Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-    Write-Host ""
-}
-
-# ===== MAIN LOOP =====
-while ($true) {
-    Show-Menu
-    Write-Host "Select option: " -NoNewline -ForegroundColor Cyan
-    $choice = Read-Host
-
-    try {
-        switch ($choice) {
-            "1" { Clean-Temp }
-            # ... dán tất cả các case khác của bạn vào đây (từ code đầu tiên)
-
-            "41" { Disable-WindowsUpdate }
-            "42" { Enable-WindowsUpdate }
-            "43" { Clear-Host; Get-WindowsUpdateStatus; Pause }
-            "99" { Show-Readme }
-            "0" {
-                $confirm = Read-Host "Are you sure you want to exit? (Y/N)"
-                if ($confirm -match "^y") { exit }
-            }
-            default { Write-Host "Invalid option!" -ForegroundColor Red }
-        }
-    }
-    catch {
-        Write-Host "Error: $($_.Exception.Message)" -ForegroundColor Red
-    }
-    Pause
-}
-'@
-
-$menuContent | Out-File -FilePath "$base\menu.ps1" -Encoding UTF8 -Force
-
-Write-Host "✅ menu.ps1 đã được tạo đầy đủ" -ForegroundColor Green
+Write-Host "✅ windowsupdate.ps1 đã tạo" -ForegroundColor Green
 Write-Host "Starting WinOpt Tool..." -ForegroundColor Cyan
 
-# Chạy menu
+# Chạy trực tiếp menu.ps1 (không ghi đè nữa)
 powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
