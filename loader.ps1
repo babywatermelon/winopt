@@ -4,7 +4,7 @@ Write-Host "Loading WinOpt Tool..." -ForegroundColor Cyan
 $base = "$env:TEMP\winopt"
 $modules = "$base\modules"
 
-# Xóa thư mục cũ để tải phiên bản mới nhất
+# Xóa thư mục cũ
 if (Test-Path $base) {
     Remove-Item -Path $base -Recurse -Force -ErrorAction SilentlyContinue
 }
@@ -13,7 +13,6 @@ New-Item -ItemType Directory -Path $modules -Force | Out-Null
 
 Write-Host "Downloading modules from GitHub..." -ForegroundColor DarkGray
 
-# Danh sách module
 $moduleList = @("clean", "network", "repair", "tools", "install", "uninstall", "windowsupdate", "security", "gaming")
 
 foreach ($m in $moduleList) {
@@ -21,17 +20,19 @@ foreach ($m in $moduleList) {
     $out = "$modules\$m.ps1"
     
     try {
-        Invoke-WebRequest $url -OutFile $out -UseBasicParsing -TimeoutSec 15
+        Invoke-WebRequest $url -OutFile $out -UseBasicParsing -TimeoutSec 20
         Write-Host "✅ Downloaded: $m.ps1" -ForegroundColor Green
     }
     catch {
         Write-Host "❌ Error downloading $m.ps1" -ForegroundColor Red
-        Write-Host "   $($_.Exception.Message)" -ForegroundColor Red
     }
 }
 
-# === DEBUG WINDOWS UPDATE MODULE ===
-Write-Host "`n=== KIỂM TRA WINDOWS UPDATE MODULE ===" -ForegroundColor Yellow
+# === FIX EXECUTION POLICY & LOAD MODULES ===
+Write-Host "`nSetting Execution Policy for this session..." -ForegroundColor Yellow
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+
+Write-Host "`n=== KIỂM TRA WINDOWS UPDATE MODULE ===" -ForegroundColor Cyan
 
 $updateFile = "$modules\windowsupdate.ps1"
 
@@ -39,35 +40,33 @@ if (Test-Path $updateFile) {
     try {
         . $updateFile
         Write-Host "✅ windowsupdate.ps1 loaded successfully" -ForegroundColor Magenta
-        
-        # Kiểm tra các hàm có tồn tại không
-        if (Get-Command Disable-WindowsUpdate -ErrorAction SilentlyContinue) {
-            Write-Host "   ✓ Disable-WindowsUpdate tồn tại" -ForegroundColor Green
-        } else {
-            Write-Host "   ✘ Disable-WindowsUpdate KHÔNG tồn tại" -ForegroundColor Red
-        }
-        
+
         if (Get-Command Enable-WindowsUpdate -ErrorAction SilentlyContinue) {
-            Write-Host "   ✓ Enable-WindowsUpdate tồn tại" -ForegroundColor Green
+            Write-Host "   ✓ Enable-WindowsUpdate sẵn sàng" -ForegroundColor Green
         } else {
-            Write-Host "   ✘ Enable-WindowsUpdate KHÔNG tồn tại (đây là nguyên nhân lỗi!)" -ForegroundColor Red
-        }
-        
-        if (Get-Command Get-WindowsUpdateStatus -ErrorAction SilentlyContinue) {
-            Write-Host "   ✓ Get-WindowsUpdateStatus tồn tại" -ForegroundColor Green
+            Write-Host "   ✘ Enable-WindowsUpdate KHÔNG tồn tại (file bị cắt)" -ForegroundColor Red
         }
     }
     catch {
-        Write-Host "❌ Lỗi khi load windowsupdate.ps1" -ForegroundColor Red
+        Write-Host "❌ Lỗi load windowsupdate.ps1" -ForegroundColor Red
         Write-Host "   $($_.Exception.Message)" -ForegroundColor Red
     }
 } else {
-    Write-Host "❌ Không tìm thấy windowsupdate.ps1 sau khi download" -ForegroundColor Red
+    Write-Host "❌ Không tìm thấy windowsupdate.ps1" -ForegroundColor Red
 }
 
-Write-Host "=== DEBUG HOÀN TẤT ===`n" -ForegroundColor Yellow
+Write-Host "=== DEBUG HOÀN TẤT ===`n" -ForegroundColor Cyan
 
-Write-Host "Starting WinOpt..." -ForegroundColor Cyan
+# Tạo file menu.ps1 thủ công (vì file trên GitHub có vấn đề)
+Write-Host "Creating menu.ps1 ..." -ForegroundColor DarkGray
+
+$menuContent = @'
+# (Dán toàn bộ nội dung menu.ps1 đã sửa của anh vào đây - phần từ $host.UI.RawUI.WindowTitle đến hết vòng while)
+'@
+
+$menuContent | Out-File -FilePath "$base\menu.ps1" -Encoding UTF8
+
+Write-Host "Starting WinOpt..." -ForegroundColor Green
 
 # Chạy menu
 powershell -ExecutionPolicy Bypass -File "$base\menu.ps1"
