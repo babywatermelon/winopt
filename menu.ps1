@@ -138,8 +138,8 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    Draw-Section "Windows Update Control (MẠNH)" "Security Control" $menuWidth $leftPadding
-    Draw-Line "[41] Disable Win Update (Cực mạnh)" "[51] Disable Defender" $menuWidth $leftPadding
+    Draw-Section "Windows Update Control" "Security Control" $menuWidth $leftPadding
+    Draw-Line "[41] Disable Win Update" "[51] Disable Defender" $menuWidth $leftPadding
     Draw-Line "[42] Enable Win Update" "[52] Enable Defender" $menuWidth $leftPadding
     Draw-Line "[43] Check Update Status" "[53] Disable Virus Prot." $menuWidth $leftPadding
     Draw-Line "" "[54] Enable Virus Prot." $menuWidth $leftPadding
