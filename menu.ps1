@@ -108,14 +108,16 @@ function Draw-Section {
 }
 
 # ===== SHOW-MENU =====
+# ===== SHOW-MENU =====
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 100
+    $menuWidth = 92                    # Giảm xuống một chút để cân đối hơn
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
-   
+  
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
-   
+  
+    # System Cleanup & Repair Tools
     Draw-Section "System Cleanup" "Repair Tools" $menuWidth $leftPadding
     Draw-Line "[1] Clean Temp" "[11] Repair Windows (SFC)" $menuWidth $leftPadding
     Draw-Line "[2] Clear Prefetch" "[12] DISM Repair" $menuWidth $leftPadding
@@ -126,6 +128,7 @@ function Show-Menu {
     Draw-Line "[7] Clear Restore Points" "" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    # Network Tools & Windows Quick Tools
     Draw-Section "Network Tools" "Windows Quick Tools" $menuWidth $leftPadding
     Draw-Line "[21] Flush DNS" "[31] Task Manager" $menuWidth $leftPadding
     Draw-Line "[22] Network Reset" "[32] Control Panel" $menuWidth $leftPadding
@@ -138,17 +141,19 @@ function Show-Menu {
     Draw-Line "" "[39] System Info GUI" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
-    Draw-Section "Security" "Gaming Tools" "" $menuWidth $leftPadding
+    # Security & Gaming Tools (đã gộp)
+    Draw-Section "Security & Gaming Tools" "" $menuWidth $leftPadding
     Draw-Line "[51] Disable Defender" "[61] Disable Game Bar" $menuWidth $leftPadding
     Draw-Line "[52] Enable Defender" "[62] Enable Game Bar" $menuWidth $leftPadding
-    Draw-Line "[53] Disable Virus Prot" "[63] Disable Game Mode" $menuWidth $leftPadding
-    Draw-Line "[54] Enable Virus Prot" "[64] Enable Game Mode" $menuWidth $leftPadding
+    Draw-Line "[53] Disable Virus Prot." "[63] Disable Game Mode" $menuWidth $leftPadding
+    Draw-Line "[54] Enable Virus Prot." "[64] Enable Game Mode" $menuWidth $leftPadding
     Draw-Line "[55] Enable Firewall" "[65] High Performance" $menuWidth $leftPadding
     Draw-Line "[56] Disable Firewall" "[66] Balanced (Default)" $menuWidth $leftPadding
     Draw-Line "" "[67] Disable Core Isolation" $menuWidth $leftPadding
     Draw-Line "" "[68] Enable Core Isolation" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    # Install & Uninstall Tools
     Draw-Section "Install Tools" "Uninstall Tools" $menuWidth $leftPadding
     Draw-Line "[71] Chrome" "[81] Remove Chrome" $menuWidth $leftPadding
     Draw-Line "[72] Edge" "[82] Remove Edge" $menuWidth $leftPadding
@@ -160,8 +165,10 @@ function Show-Menu {
     Draw-Line "[78] Office 365" "[88] Remove Office" $menuWidth $leftPadding
     Draw-Line "" "" $menuWidth $leftPadding
 
+    # Help & Exit
     Draw-Line "[99] README / Help" "" $menuWidth $leftPadding
     Draw-Line "[0] Exit" "" $menuWidth $leftPadding
+    
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
     Write-Host ""
 }
