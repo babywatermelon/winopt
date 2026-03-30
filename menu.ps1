@@ -111,7 +111,7 @@ function Draw-Section {
 function Show-Menu {
     Header
     $width = $Host.UI.RawUI.WindowSize.Width
-    $menuWidth = 120
+    $menuWidth = 100
     $leftPadding = [math]::Max(0, [math]::Floor(($width - $menuWidth) / 2))
    
     Write-Host (" " * $leftPadding + "+" + ("-" * ($menuWidth - 2)) + "+") -ForegroundColor DarkGray
