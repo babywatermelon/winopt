@@ -142,7 +142,7 @@ function Show-Menu {
     Draw-Line "" "" $menuWidth $leftPadding
 
     # Security & Gaming Tools (đã gộp)
-    Draw-Section "Security & Gaming Tools" "" $menuWidth $leftPadding
+    Draw-Section "Security" "Gaming Tools" "" $menuWidth $leftPadding
     Draw-Line "[51] Disable Defender" "[61] Disable Game Bar" $menuWidth $leftPadding
     Draw-Line "[52] Enable Defender" "[62] Enable Game Bar" $menuWidth $leftPadding
     Draw-Line "[53] Disable Virus Prot." "[63] Disable Game Mode" $menuWidth $leftPadding
